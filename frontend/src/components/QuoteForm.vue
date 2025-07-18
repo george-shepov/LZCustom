@@ -1,4 +1,3 @@
-
 <template>
   <section id="quote-form" class="quote-section section-padding">
     <div class="container">
@@ -235,7 +234,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 
 const isSubmitting = ref(false)
 const showSuccess = ref(false)
