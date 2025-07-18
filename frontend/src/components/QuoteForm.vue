@@ -78,19 +78,24 @@
                 <div class="project-selection">
                   <label class="section-label">Project Type *</label>
                   <div class="project-cards-grid">
-                    <div 
-                      v-for="projectType in projectTypes" 
+                    <div
+                      v-for="projectType in projectTypes"
                       :key="projectType.value"
                       class="project-card"
                       :class="{ 'selected': form.project === projectType.value }"
                       @click="selectProject(projectType.value)"
                     >
-                      <div class="project-icon">
-                        <i :class="getProjectIcon(projectType.value)"></i>
+                      <div class="project-preview">
+                        <img :src="projectType.images[0]" :alt="projectType.label" />
                       </div>
-                      <div class="project-info">
-                        <h4>{{ projectType.label }}</h4>
-                        <p>{{ projectType.description }}</p>
+                      <div class="project-content">
+                        <div class="project-icon">
+                          <i :class="getProjectIcon(projectType.value)"></i>
+                        </div>
+                        <div class="project-info">
+                          <h4>{{ projectType.label }}</h4>
+                          <p>{{ projectType.description }}</p>
+                        </div>
                       </div>
                       <div class="selection-indicator">
                         <i class="fas fa-check"></i>
@@ -253,55 +258,96 @@ const form = ref({
   measurements: ''
 })
 
-// Expanded project types with optimized images
+// Expanded project types with high-resolution images
 const projectTypes = [
   {
     value: 'cabinets',
     label: 'Custom Cabinets',
     description: 'Handcrafted woodwork for kitchens & baths',
-    image: '/assets/gallery/projects/custom-cabinets-1.jpg'
+    images: [
+      '/assets/gallery/projects/custom-cabinets-hd.png',
+      '/assets/gallery/u6358423361_andcrafted_oak_kitchen_cabinets_with_soft-close_h_f3935a67-2994-44ce-b732-c95ad7de892f_2.png',
+      '/assets/gallery/u6358423361_andcrafted_oak_kitchen_cabinets_with_soft-close_h_f3935a67-2994-44ce-b732-c95ad7de892f_3.png'
+    ]
   },
   {
     value: 'countertops',
     label: 'Countertops',
     description: 'Premium stone surfaces',
-    image: '/assets/gallery/projects/kitchen-granite-1.jpg'
+    images: [
+      '/assets/gallery/projects/kitchen-granite-hd.png',
+      '/assets/gallery/u6358423361_Luxury_modern_kitchen_with_beautiful_granite_coun_07a300a5-aa75-4625-8165-3dcb4fe28efa_2.png',
+      '/assets/gallery/u6358423361_Luxury_modern_kitchen_with_beautiful_granite_coun_07a300a5-aa75-4625-8165-3dcb4fe28efa_3.png'
+    ]
   },
   {
     value: 'stone',
     label: 'Stone Fabrication',
     description: 'Precision cutting & installation',
-    image: '/assets/gallery/projects/engineered-stone.jpg'
+    images: [
+      '/assets/gallery/u6358423361_Beautiful_granite_slab_edge_detail_polished_stone_9bc42d53-abae-4c53-bee6-3a1b16a30a08_0.png',
+      '/assets/gallery/u6358423361_Beautiful_granite_slab_edge_detail_polished_stone_9bc42d53-abae-4c53-bee6-3a1b16a30a08_2.png',
+      '/assets/gallery/u6358423361_Beautiful_granite_slab_edge_detail_polished_stone_9bc42d53-abae-4c53-bee6-3a1b16a30a08_3.png'
+    ]
   },
   {
     value: 'plastics',
     label: 'Plastics & Laminate',
     description: 'Durable commercial surfaces',
-    image: '/assets/gallery/projects/commercial-laminate-1.jpg'
+    images: [
+      '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_0.png',
+      '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_1.png',
+      '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_2.png'
+    ]
   },
   {
     value: 'tile',
     label: 'Tile & Flooring',
     description: 'Expert installation services',
-    image: '/assets/gallery/projects/tile-flooring-1.jpg'
+    images: [
+      '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_0.png',
+      '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_1.png',
+      '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_3.png'
+    ]
   },
   {
     value: 'painting',
     label: 'Commercial Painting',
     description: 'Interior & exterior services',
-    image: '/assets/gallery/projects/commercial-painting-1.jpg'
+    images: [
+      '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_0.png',
+      '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_1.png',
+      '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_2.png'
+    ]
   },
   {
     value: 'multiple',
     label: 'Multiple Services',
     description: 'Complete renovation projects',
-    image: '/assets/gallery/hero/hero-1.jpg'
+    images: [
+      '/assets/gallery/hero/hero-main-hd.png',
+      '/assets/gallery/hero/hero-showroom-hd.png',
+      '/assets/gallery/hero/hero-kitchen-hd.png'
+    ]
   }
 ]
 
 const selectProject = (projectValue) => {
   form.value.project = projectValue
   updateProjectFields()
+}
+
+const getProjectIcon = (projectType) => {
+  const icons = {
+    'cabinets': 'fas fa-hammer',
+    'countertops': 'fas fa-gem',
+    'stone': 'fas fa-mountain',
+    'plastics': 'fas fa-layer-group',
+    'tile': 'fas fa-th-large',
+    'painting': 'fas fa-paint-roller',
+    'multiple': 'fas fa-tools'
+  }
+  return icons[projectType] || 'fas fa-tools'
 }
 
 // Business Hours Logic
@@ -421,18 +467,7 @@ const getProjectTitle = () => {
   return titles[form.value.project] || 'Project'
 }
 
-const getProjectIcon = (projectType) => {
-  const icons = {
-    'cabinets': 'fas fa-hammer',
-    'countertops': 'fas fa-gem', 
-    'stone': 'fas fa-mountain',
-    'plastics': 'fas fa-layer-group',
-    'tile': 'fas fa-th-large',
-    'painting': 'fas fa-paint-roller',
-    'multiple': 'fas fa-tools'
-  }
-  return icons[projectType] || 'fas fa-tools'
-}
+
 
 const submitForm = async () => {
   isSubmitting.value = true
@@ -482,9 +517,12 @@ const resetForm = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 .quote-section {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
 }
 
 .container {
@@ -508,7 +546,7 @@ const resetForm = () => {
 }
 
 .section-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   color: #1e293b;
   font-weight: 600;
@@ -516,7 +554,7 @@ const resetForm = () => {
 }
 
 .section-subtitle {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: #64748b;
   max-width: 600px;
   margin: 0 auto;
@@ -524,7 +562,7 @@ const resetForm = () => {
 
 .quote-content {
   display: grid;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 2fr 3fr;
   gap: 3rem;
   align-items: start;
 }
@@ -629,7 +667,7 @@ const resetForm = () => {
 }
 
 .form-section h3 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   color: #1e293b;
   margin-bottom: 1.5rem;
   font-size: 1.4rem;
@@ -650,30 +688,32 @@ const resetForm = () => {
 }
 
 .form-group label {
-  font-weight: 500;
+  font-weight: 600;
   color: #374151;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  border: 2px solid #e2e8f0;
+  border: 2px solid #cbd5e1;
   border-radius: 8px;
-  padding: 0.875rem 1rem;
-  font-size: 1rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
   transition: all 0.2s ease;
   background: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #f39c12;
+  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Project Selection Styles */
@@ -691,7 +731,7 @@ const resetForm = () => {
 
 .project-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -699,12 +739,15 @@ const resetForm = () => {
 .project-card {
   background: white;
   border: 2px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.25rem;
+  border-radius: 12px;
+  padding: 1rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  height: 140px;
+  display: flex;
+  align-items: center;
 }
 
 .project-card::before {
@@ -735,77 +778,58 @@ const resetForm = () => {
   transform: scaleX(1);
 }
 
-.project-image {
-  width: 100%;
-  height: 140px;
-  border-radius: 12px;
+.project-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.project-image img {
+.project-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: all 0.4s ease;
 }
 
-.project-card:hover .project-image img {
-  transform: scale(1.08);
-  filter: brightness(1.1);
-}
-
-.image-counter {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.cycle-hint {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(243, 156, 18, 0.9);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
+.project-content {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  flex: 1;
 }
 
-.project-image:hover .cycle-hint {
-  opacity: 1;
+.project-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
 }
 
-.cycle-hint i {
-  font-size: 0.6rem;
+.project-info {
+  flex: 1;
 }
 
 .project-info h4 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .project-info p {
   color: #64748b;
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: 0.85rem;
+  line-height: 1.3;
 }
 
 .selection-indicator {
@@ -857,7 +881,7 @@ const resetForm = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   width: 100%;
 }
 
@@ -883,7 +907,7 @@ const resetForm = () => {
 }
 
 .success-message h3 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   color: #1e293b;
   margin-bottom: 1rem;
   font-size: 2rem;

@@ -144,23 +144,24 @@ const currentImageIndex = ref(0)
 const carouselOpen = ref(false)
 const currentCarouselIndex = ref(0)
 
-// Complete gallery with all unique images (22+ images)
+// Complete gallery with high-resolution images
 const allGalleryImages = [
-  // Hero Images (3 images)
-  { src: '/assets/gallery/hero/hero-main.jpg', title: 'Stone Fabrication Workshop', category: 'Workshop', type: 'hero' },
-  { src: '/assets/gallery/hero/hero-showroom.jpg', title: 'Kitchen Showroom Display', category: 'Showroom', type: 'hero' },
-  { src: '/assets/gallery/hero/hero-facility.jpg', title: 'Fabrication Facility', category: 'Workshop', type: 'hero' },
-  
-  // Project Gallery (9 images)
-  { src: '/assets/gallery/projects/kitchen-granite-1.jpg', title: 'Modern Kitchen with Granite Countertops', category: 'Countertops', type: 'project' },
-  { src: '/assets/gallery/projects/custom-cabinets-1.jpg', title: 'Custom Oak Kitchen Cabinets', category: 'Cabinets', type: 'project' },
-  { src: '/assets/gallery/projects/bathroom-marble-1.jpg', title: 'Luxury Marble Bathroom', category: 'Stone Fabrication', type: 'project' },
-  { src: '/assets/gallery/projects/commercial-laminate-1.jpg', title: 'Commercial Laminate Installation', category: 'Plastics & Laminate', type: 'project' },
-  { src: '/assets/gallery/projects/tile-flooring-1.jpg', title: 'Custom Tile Pattern Flooring', category: 'Tile & Flooring', type: 'project' },
-  { src: '/assets/gallery/projects/commercial-painting-1.jpg', title: 'Commercial Interior Painting', category: 'Commercial Painting', type: 'project' },
-  { src: '/assets/gallery/projects/granite-samples.jpg', title: 'Premium Granite Selection', category: 'Materials', type: 'material' },
-  { src: '/assets/gallery/projects/wood-samples.jpg', title: 'Wood Species Showcase', category: 'Materials', type: 'material' },
-  { src: '/assets/gallery/projects/engineered-stone.jpg', title: 'Engineered Quartz Surfaces', category: 'Materials', type: 'material' },
+  // Hero Images (4 high-res images)
+  { src: '/assets/gallery/hero/hero-main-hd.png', title: 'Stone Fabrication Workshop', category: 'Workshop', type: 'hero' },
+  { src: '/assets/gallery/hero/hero-showroom-hd.png', title: 'Kitchen Showroom Display', category: 'Showroom', type: 'hero' },
+  { src: '/assets/gallery/hero/hero-kitchen-hd.png', title: 'Luxury Kitchen Installation', category: 'Kitchen', type: 'hero' },
+  { src: '/assets/gallery/hero/hero-workshop-hd.png', title: 'Professional Workshop', category: 'Workshop', type: 'hero' },
+
+  // Project Gallery (high-resolution project images)
+  { src: '/assets/gallery/projects/kitchen-granite-hd.png', title: 'Modern Kitchen with Granite Countertops', category: 'Countertops', type: 'project' },
+  { src: '/assets/gallery/projects/custom-cabinets-hd.png', title: 'Custom Oak Kitchen Cabinets', category: 'Cabinets', type: 'project' },
+  { src: '/assets/gallery/projects/bathroom-marble-hd.png', title: 'Luxury Marble Bathroom', category: 'Stone Fabrication', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_0.png', title: 'Commercial Laminate Installation', category: 'Plastics & Laminate', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_0.png', title: 'Custom Tile Pattern Flooring', category: 'Tile & Flooring', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_0.png', title: 'Commercial Interior Painting', category: 'Commercial Painting', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Collection_of_granite_slab_samples_natural_stone__668014ef-391a-49d5-90e0-b50532401f32_2.png', title: 'Premium Granite Selection', category: 'Materials', type: 'material' },
+  { src: '/assets/gallery/u6358423361_Various_wood_species_samples_for_custom_cabinets__0ccfe8f4-934d-4f62-bf68-c4208c673a0e_0.png', title: 'Wood Species Showcase', category: 'Materials', type: 'material' },
+  { src: '/assets/gallery/u6358423361_Modern_engineered_quartz_surfaces_consistent_patt_9bad55a7-8119-4466-b1b1-09e31a28fd21_2.png', title: 'Engineered Quartz Surfaces', category: 'Materials', type: 'material' },
   
   // Service Icons (6 images)
   { src: '/assets/icons/services/cabinets.jpg', title: 'Custom Cabinet Services', category: 'Services', type: 'service' },
@@ -180,40 +181,40 @@ const allGalleryImages = [
   { src: '/assets/textures/geometric-pattern.jpg', title: 'Geometric Design Elements', category: 'Design', type: 'texture' }
 ]
 
-// Featured gallery items for main grid (subset of allGalleryImages)
+// Featured gallery items for main grid (high-resolution images)
 const galleryItems = [
   {
-    image: '/assets/gallery/projects/kitchen-granite-1.jpg',
+    image: '/assets/gallery/projects/kitchen-granite-hd.png',
     title: 'Custom Kitchen Countertops',
     category: 'Granite & Stone',
     featured: true
   },
   {
-    image: '/assets/gallery/projects/custom-cabinets-1.jpg',
+    image: '/assets/gallery/projects/custom-cabinets-hd.png',
     title: 'Handcrafted Oak Cabinets',
     category: 'Custom Cabinets',
     featured: true
   },
   {
-    image: '/assets/gallery/projects/bathroom-marble-1.jpg',
+    image: '/assets/gallery/projects/bathroom-marble-hd.png',
     title: 'Marble Bathroom Vanity',
     category: 'Stone Fabrication',
     featured: false
   },
   {
-    image: '/assets/gallery/projects/commercial-laminate-1.jpg',
+    image: '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_0.png',
     title: 'Commercial Laminate Installation',
     category: 'Commercial Projects',
     featured: false
   },
   {
-    image: '/assets/gallery/projects/tile-flooring-1.jpg',
+    image: '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_0.png',
     title: 'Geometric Tile Flooring',
     category: 'Tile & Flooring',
     featured: false
   },
   {
-    image: '/assets/gallery/projects/commercial-painting-1.jpg',
+    image: '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_0.png',
     title: 'Professional Interior Painting',
     category: 'Commercial Painting',
     featured: false

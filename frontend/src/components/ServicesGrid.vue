@@ -13,11 +13,10 @@
           v-for="service in services"
           :key="service.title"
           @mouseenter="playHoverSound"
+          @click="openServiceModal(service)"
         >
           <div class="service-icon">
-            <div class="icon-background" :style="{ background: service.gradient }">
-              <i :class="service.icon"></i>
-            </div>
+            <i :class="service.icon"></i>
           </div>
 
           <div class="service-content">
@@ -26,7 +25,7 @@
 
             <div class="service-features">
               <ul>
-                <li v-for="feature in service.features" :key="feature">{{ feature }}</li>
+                <li v-for="feature in service.features.slice(0, 3)" :key="feature">{{ feature }}</li>
               </ul>
             </div>
 
@@ -34,7 +33,7 @@
               <div class="materials-label">Materials:</div>
               <div class="materials-list">
                 <span
-                  v-for="material in service.materials"
+                  v-for="material in service.materials.slice(0, 4)"
                   :key="material"
                   class="material-tag"
                 >
@@ -44,10 +43,8 @@
             </div>
           </div>
 
-          <div class="service-overlay">
-            <button class="learn-more-btn" @click="openServiceModal(service)">
-              Learn More
-            </button>
+          <div class="service-action">
+            <i class="fas fa-arrow-right"></i>
           </div>
         </div>
       </div>
@@ -187,152 +184,144 @@ const playHoverSound = () => {
 
 .service-card {
   background: white;
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 12px;
+  padding: 1.5rem;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid #f1f5f9;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f39c12, #e67e22);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  border-radius: 12px 12px 0 0;
 }
 
 .service-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.15);
+  border-color: #f39c12;
 }
 
-.service-card:hover .service-overlay {
-  opacity: 1;
-  visibility: visible;
-}
-
-.service-card:hover .service-icon .icon-background {
-  transform: scale(1.1) rotate(5deg);
+.service-card:hover::before {
+  transform: scaleX(1);
 }
 
 .service-icon {
-  margin-bottom: 1.5rem;
-}
-
-.icon-background {
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  flex-shrink: 0;
   transition: all 0.3s ease;
-  position: relative;
 }
 
-.icon-background i {
-  font-size: 2rem;
+.service-icon i {
+  font-size: 1.5rem;
   color: white;
-  z-index: 2;
 }
 
 .service-content {
-  text-align: center;
+  flex: 1;
 }
 
 .service-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #2c3e50;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-weight: 600;
+  font-family: 'Playfair Display', serif;
 }
 
 .service-description {
   color: #7f8c8d;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
 .service-features ul {
   list-style: none;
   padding: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .service-features li {
   color: #34495e;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   position: relative;
-  padding-left: 1.5rem;
-  font-size: 0.9rem;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
 }
 
 .service-features li::before {
   content: '✓';
   position: absolute;
   left: 0;
-  color: #27ae60;
+  color: #f39c12;
   font-weight: bold;
+  font-size: 0.8rem;
 }
 
 .service-materials {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .materials-label {
   font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
 }
 
 .materials-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
+  gap: 0.25rem;
 }
 
 .material-tag {
-  background: #ecf0f1;
-  color: #2c3e50;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  background: #f8fafc;
+  color: #64748b;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
+  border: 1px solid #e2e8f0;
 }
 
-.service-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(44, 62, 80, 0.95);
+.service-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  visibility: hidden;
+  width: 30px;
+  height: 30px;
+  background: #f8fafc;
+  border-radius: 50%;
+  color: #f39c12;
   transition: all 0.3s ease;
-  border-radius: 16px;
+  flex-shrink: 0;
 }
 
-.learn-more-btn {
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+.service-card:hover .service-action {
+  background: #f39c12;
   color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  transform: translateY(20px);
-}
-
-.service-card:hover .learn-more-btn {
-  transform: translateY(0);
-}
-
-.learn-more-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+  transform: translateX(5px);
 }
 
 .services-cta {

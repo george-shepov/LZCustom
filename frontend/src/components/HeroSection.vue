@@ -57,30 +57,30 @@ const screenWidth = ref(window.innerWidth)
 
 const heroImages = {
   mobile: [
-    '/assets/gallery/hero/hero-main.jpg',
-    '/assets/gallery/hero/hero-showroom.jpg',
-    '/assets/gallery/hero/hero-facility.jpg'
+    '/assets/gallery/hero/hero-main-hd.png',
+    '/assets/gallery/hero/hero-showroom-hd.png',
+    '/assets/gallery/hero/hero-kitchen-hd.png'
   ],
   tablet: [
-    '/assets/gallery/hero/hero-main.jpg',
-    '/assets/gallery/hero/hero-showroom.jpg',
-    '/assets/gallery/hero/hero-facility.jpg',
-    '/assets/gallery/hero/hero-1.jpg'
+    '/assets/gallery/hero/hero-main-hd.png',
+    '/assets/gallery/hero/hero-showroom-hd.png',
+    '/assets/gallery/hero/hero-kitchen-hd.png',
+    '/assets/gallery/hero/hero-workshop-hd.png'
   ],
   desktop: [
-    '/assets/gallery/hero/hero-main.jpg',
-    '/assets/gallery/hero/hero-showroom.jpg',
-    '/assets/gallery/hero/hero-facility.jpg',
-    '/assets/gallery/hero/hero-1.jpg',
-    '/assets/gallery/hero/hero-3.jpg'
+    '/assets/gallery/hero/hero-main-hd.png',
+    '/assets/gallery/hero/hero-showroom-hd.png',
+    '/assets/gallery/hero/hero-kitchen-hd.png',
+    '/assets/gallery/hero/hero-workshop-hd.png',
+    '/assets/gallery/hero/hero-1.jpg'
   ],
   large: [
-    '/assets/gallery/hero/hero-main.jpg',
-    '/assets/gallery/hero/hero-showroom.jpg',
-    '/assets/gallery/hero/hero-facility.jpg',
+    '/assets/gallery/hero/hero-main-hd.png',
+    '/assets/gallery/hero/hero-showroom-hd.png',
+    '/assets/gallery/hero/hero-kitchen-hd.png',
+    '/assets/gallery/hero/hero-workshop-hd.png',
     '/assets/gallery/hero/hero-1.jpg',
-    '/assets/gallery/hero/hero-3.jpg',
-    '/assets/gallery/hero/hero-5.jpg'
+    '/assets/gallery/hero/hero-3.jpg'
   ]
 }
 
