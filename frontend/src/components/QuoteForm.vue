@@ -482,11 +482,9 @@ const resetForm = () => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-
 .quote-section {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .container {
@@ -510,7 +508,7 @@ const resetForm = () => {
 }
 
 .section-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   color: #1e293b;
   font-weight: 600;
@@ -631,7 +629,7 @@ const resetForm = () => {
 }
 
 .form-section h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   color: #1e293b;
   margin-bottom: 1.5rem;
   font-size: 1.4rem;
@@ -666,7 +664,7 @@ const resetForm = () => {
   font-size: 1rem;
   transition: all 0.2s ease;
   background: white;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   width: 100%;
 }
 
@@ -859,7 +857,7 @@ const resetForm = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   width: 100%;
 }
 
@@ -885,7 +883,7 @@ const resetForm = () => {
 }
 
 .success-message h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   color: #1e293b;
   margin-bottom: 1rem;
   font-size: 2rem;

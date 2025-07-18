@@ -219,19 +219,19 @@ const galleryItems = [
     featured: false
   },
   {
-    image: '/assets/gallery/projects/project-7.jpg',
+    image: '/assets/gallery/projects/granite-samples.jpg',
     title: 'Stone Sample Collection',
     category: 'Materials',
     featured: false
   },
   {
-    image: '/assets/gallery/projects/project-8.jpg',
+    image: '/assets/gallery/projects/wood-samples.jpg',
     title: 'Wood Species Showcase',
     category: 'Materials',
     featured: false
   },
   {
-    image: '/assets/gallery/projects/project-9.jpg',
+    image: '/assets/gallery/projects/engineered-stone.jpg',
     title: 'Engineered Quartz Surfaces',
     category: 'Materials',
     featured: false
