@@ -18,20 +18,20 @@
             @mouseenter="playHoverSound"
             @click="openServiceModal(service)"
           >
-          <div class="service-icon">
-            <i :class="service.icon"></i>
-          </div>
-
-          <div class="service-content">
-            <h3 class="service-title">{{ service.title }}</h3>
-            <p class="service-description">{{ service.description }}</p>
-
-            <div class="service-features">
-              <h4 class="features-subhead">{{ service.subhead || 'Services' }}</h4>
-              <ul>
-                <li v-for="feature in service.features.slice(0, 3)" :key="feature">{{ feature }}</li>
-              </ul>
+            <div class="service-icon">
+              <i :class="service.icon"></i>
             </div>
+
+            <div class="service-content">
+              <h3 class="service-title">{{ service.title }}</h3>
+              <p class="service-description">{{ service.description }}</p>
+
+              <div class="service-features">
+                <h4 class="features-subhead">{{ service.subhead || 'Services' }}</h4>
+                <ul>
+                  <li v-for="feature in service.features.slice(0, 3)" :key="feature">{{ feature }}</li>
+                </ul>
+              </div>
 
             <div class="service-materials" v-if="service.materials">
               <div class="materials-label">Materials:</div>
@@ -289,9 +289,8 @@ const playHoverSound = () => {
   transition: all 0.3s ease;
   border: 2px solid #f1f5f9;
   cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
+  display: block;
+  text-align: center;
 }
 
 .service-card.primary {
@@ -328,15 +327,16 @@ const playHoverSound = () => {
 }
 
 .service-icon {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  margin: 0 auto 1.5rem auto;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
 }
 
 .service-icon i {
@@ -345,15 +345,16 @@ const playHoverSound = () => {
 }
 
 .service-content {
-  flex: 1;
+  text-align: left;
 }
 
 .service-title {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+  margin-bottom: 1rem;
+  font-weight: 700;
   font-family: 'Playfair Display', serif;
+  text-align: center;
 }
 
 .service-description {
