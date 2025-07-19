@@ -62,8 +62,8 @@ git clone https://github.com/george-shepov/LZCustom.git
 cd LZCustom
 
 # Run automated provisioning script
-chmod +x provision-ubuntu.sh
-./provision-ubuntu.sh
+chmod +x scripts/provision-ubuntu.sh
+./scripts/provision-ubuntu.sh
 ```
 
 **What the script installs:**
@@ -83,8 +83,8 @@ git clone https://github.com/george-shepov/LZCustom.git
 cd LZCustom
 
 # Quick development setup
-chmod +x dev-setup.sh
-./dev-setup.sh
+chmod +x scripts/dev-setup.sh
+./scripts/dev-setup.sh
 
 # Start development servers
 ./start-dev.sh
@@ -359,7 +359,7 @@ This project is proprietary and confidential. All rights reserved by LZ Custom F
 
 ## 🐧 Deployment Scripts
 
-### `provision-ubuntu.sh` - Production Setup
+### `scripts/provision-ubuntu.sh` - Production Setup
 Complete automated setup for Ubuntu servers:
 - System updates and essential packages
 - Node.js 18.x, Python 3.8+, Ollama installation
@@ -369,7 +369,7 @@ Complete automated setup for Ubuntu servers:
 - UFW firewall setup
 - Management scripts creation
 
-### `dev-setup.sh` - Development Environment
+### `scripts/dev-setup.sh` - Development Environment
 Quick setup for local development:
 - Frontend and backend dependency installation
 - Virtual environment creation
