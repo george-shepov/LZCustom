@@ -7,6 +7,8 @@ import sqlite3
 import json
 from datetime import datetime
 import uvicorn
+import asyncio
+from llama_service import LLaMAService, QuestionClassifier
 
 app = FastAPI(title="LZ Custom API", version="1.0.0")
 
@@ -89,9 +91,40 @@ class ProspectCreate(BaseModel):
     materialType: Optional[str] = None
     squareFootage: Optional[int] = None
 
+class ChatMessage(BaseModel):
+    message: str
+    context: Optional[str] = None
+    force_tier: Optional[str] = None  # For testing specific models
+
+class ChatResponse(BaseModel):
+    response: str
+    model_used: str
+    tier: str
+    response_time: float
+    success: bool
+    error: Optional[str] = None
+
+# Global LLaMA service instance
+llama_service = None
+
 @app.on_event("startup")
 async def startup_event():
+    global llama_service
     init_db()
+    # Initialize LLaMA service
+    try:
+        llama_service = LLaMAService()
+        await llama_service.__aenter__()
+        print("✅ LLaMA service initialized successfully")
+    except Exception as e:
+        print(f"⚠️  LLaMA service initialization failed: {e}")
+        llama_service = None
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    global llama_service
+    if llama_service:
+        await llama_service.__aexit__(None, None, None)
 
 @app.post("/api/prospects")
 async def create_prospect(prospect: ProspectCreate):
@@ -225,6 +258,92 @@ async def update_prospect_status(prospect_id: int, status: dict):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat_with_ai(message: ChatMessage):
+    """
+    Chat with local LLaMA models with intelligent routing
+    """
+    global llama_service
+
+    if not llama_service:
+        return ChatResponse(
+            response="AI assistant is currently unavailable. Please call us at 216-268-2990 for immediate assistance!",
+            model_used="fallback",
+            tier="FALLBACK",
+            response_time=0,
+            success=False,
+            error="LLaMA service not initialized"
+        )
+
+    try:
+        # Force specific tier if requested (for testing)
+        force_tier = None
+        if message.force_tier:
+            tier_map = {
+                "FAST": QuestionClassifier.ModelTier.FAST,
+                "MEDIUM": QuestionClassifier.ModelTier.MEDIUM,
+                "ADVANCED": QuestionClassifier.ModelTier.ADVANCED,
+                "EXPERT": QuestionClassifier.ModelTier.EXPERT
+            }
+            force_tier = tier_map.get(message.force_tier.upper())
+
+        # Generate response
+        result = await llama_service.generate_response(
+            message.message,
+            tier=force_tier
+        )
+
+        return ChatResponse(**result)
+
+    except Exception as e:
+        return ChatResponse(
+            response="I'm experiencing technical difficulties. Please call 216-268-2990 for immediate assistance.",
+            model_used="error",
+            tier="ERROR",
+            response_time=0,
+            success=False,
+            error=str(e)
+        )
+
+@app.get("/api/chat/test")
+async def test_models():
+    """
+    Test all available models with sample questions
+    """
+    global llama_service
+
+    if not llama_service:
+        raise HTTPException(status_code=503, detail="LLaMA service not available")
+
+    test_questions = [
+        "What are your business hours?",
+        "What's the difference between granite and quartz countertops?",
+        "I need custom cabinets for a commercial kitchen with specific requirements"
+    ]
+
+    results = []
+    for question in test_questions:
+        for tier_name in ["FAST", "MEDIUM", "ADVANCED", "EXPERT"]:
+            try:
+                message = ChatMessage(message=question, force_tier=tier_name)
+                response = await chat_with_ai(message)
+                results.append({
+                    "question": question,
+                    "tier": tier_name,
+                    "model": response.model_used,
+                    "response_time": response.response_time,
+                    "success": response.success,
+                    "response_preview": response.response[:100] + "..." if len(response.response) > 100 else response.response
+                })
+            except Exception as e:
+                results.append({
+                    "question": question,
+                    "tier": tier_name,
+                    "error": str(e)
+                })
+
+    return {"test_results": results}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

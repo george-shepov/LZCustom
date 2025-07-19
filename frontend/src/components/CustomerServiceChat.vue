@@ -35,6 +35,25 @@
         </div>
       </div>
 
+      <div class="chat-input">
+        <div class="input-container">
+          <input
+            v-model="currentMessage"
+            @keydown.enter="sendMessage"
+            placeholder="Ask about our services..."
+            :disabled="isTyping"
+          />
+          <button
+            @click="sendMessage"
+            :disabled="!currentMessage.trim() || isTyping"
+            class="send-btn"
+          >
+            <i class="fas fa-paper-plane" v-if="!isTyping"></i>
+            <i class="fas fa-spinner fa-spin" v-else></i>
+          </button>
+        </div>
+      </div>
+
       <div class="chat-actions">
         <button @click="requestQuote" class="action-btn primary">
           <i class="fas fa-calculator"></i>
@@ -86,6 +105,8 @@ const unreadTips = ref(3)
 const showTipsBanner = ref(true)
 const chatMessages = ref(null)
 const activeBubbles = ref([])
+const currentMessage = ref('')
+const isTyping = ref(false)
 
 const messages = ref([
   {
@@ -184,6 +205,41 @@ const callNow = () => {
   window.location.href = 'tel:216-268-2990'
 }
 
+const sendMessage = async () => {
+  if (!currentMessage.value.trim() || isTyping.value) return
+
+  const userMsg = currentMessage.value.trim()
+  currentMessage.value = ''
+
+  // Add user message
+  addUserMessage(userMsg)
+
+  // Show typing indicator
+  isTyping.value = true
+
+  // Send to AI
+  await sendMessageToAI(userMsg)
+
+  isTyping.value = false
+}
+
+const addUserMessage = (text) => {
+  const newMessage = {
+    id: Date.now(),
+    text,
+    time: "Just now",
+    isNew: true,
+    isUser: true
+  }
+  messages.value.push(newMessage)
+
+  nextTick(() => {
+    if (chatMessages.value) {
+      chatMessages.value.scrollTop = chatMessages.value.scrollHeight
+    }
+  })
+}
+
 const closeTipsBanner = () => {
   showTipsBanner.value = false
 }
@@ -197,6 +253,39 @@ const showBubbleHelp = (bubble) => {
   addMessage(bubble.helpText)
   if (!chatOpen.value) {
     chatOpen.value = true
+  }
+}
+
+const sendMessageToAI = async (userMessage) => {
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: userMessage,
+        context: 'customer_service'
+      })
+    })
+
+    const data = await response.json()
+
+    if (data.success) {
+      // Add model info for transparency
+      const modelInfo = data.response_time < 2 ? '⚡' : data.response_time < 5 ? '🤖' : '🧠'
+      addMessage(`${modelInfo} ${data.response}`)
+
+      // Add performance info in development
+      if (window.location.hostname === 'localhost') {
+        addMessage(`💡 Answered by ${data.model_used} in ${data.response_time}s`)
+      }
+    } else {
+      addMessage(data.response)
+    }
+  } catch (error) {
+    console.error('Chat error:', error)
+    addMessage("I'm having trouble connecting right now. Please call us at 216-268-2990 for immediate assistance!")
   }
 }
 
@@ -358,6 +447,18 @@ onMounted(() => {
   max-width: 80%;
 }
 
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.user .message-content {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  border-radius: 12px 12px 4px 12px;
+  padding: 0.75rem;
+  max-width: 80%;
+}
+
 .message.new .message-content {
   animation: messageSlide 0.3s ease;
 }
@@ -381,6 +482,59 @@ onMounted(() => {
 .message-time {
   font-size: 0.7rem;
   color: #6c757d;
+}
+
+.message.user .message-time {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chat-input {
+  padding: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.input-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.input-container input:focus {
+  border-color: #f39c12;
+  box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
+}
+
+.send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .chat-actions {
