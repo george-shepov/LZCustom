@@ -26,9 +26,9 @@ class ModelConfig:
     timeout: int
     
 MODEL_CONFIGS = {
-    ModelTier.FAST: ModelConfig("llama3.2:3b", 150, 0.3, 5),
-    ModelTier.MEDIUM: ModelConfig("gemma3:4b", 250, 0.5, 10),
-    ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 400, 0.7, 15),
+    ModelTier.FAST: ModelConfig("llama3.2:3b", 150, 0.3, 15),
+    ModelTier.MEDIUM: ModelConfig("gemma3:4b", 250, 0.5, 20),
+    ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 400, 0.7, 25),
     ModelTier.EXPERT: ModelConfig("llama4:16x17b", 600, 0.8, 30)
 }
 
@@ -158,10 +158,12 @@ YOUR ROLE:
             else:
                 return self._fallback_response(question)
         except Exception as e:
+            print(f"❌ LLaMA Error: {e}")
             return self._error_response(str(e))
     
     async def _call_ollama(self, question: str, config: ModelConfig) -> str:
         """Make API call to Ollama"""
+        print(f"🔄 Calling Ollama with model: {config.name}")
         payload = {
             "model": config.name,
             "messages": [
@@ -175,18 +177,34 @@ YOUR ROLE:
             "stream": False
         }
         
-        timeout = aiohttp.ClientTimeout(total=config.timeout)
-        
-        async with self.session.post(
-            f"{self.base_url}/api/chat",
-            json=payload,
-            timeout=timeout
-        ) as response:
-            if response.status == 200:
-                data = await response.json()
-                return data["message"]["content"].strip()
-            else:
-                raise Exception(f"Ollama API error: {response.status}")
+        try:
+            timeout = aiohttp.ClientTimeout(total=config.timeout)
+            print(f"🔗 Connecting to {self.base_url}/api/chat with timeout {config.timeout}s")
+
+            async with self.session.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+                timeout=timeout
+            ) as response:
+                print(f"📡 Ollama response status: {response.status}")
+                if response.status == 200:
+                    data = await response.json()
+                    content = data["message"]["content"].strip()
+                    print(f"✅ Ollama response: {content[:100]}...")
+                    return content
+                else:
+                    error_text = await response.text()
+                    print(f"❌ Ollama API error {response.status}: {error_text}")
+                    raise Exception(f"Ollama API error: {response.status}")
+        except aiohttp.ClientTimeout as e:
+            print(f"⏰ Ollama timeout: {e}")
+            raise Exception(f"Ollama timeout: {e}")
+        except aiohttp.ClientError as e:
+            print(f"🔌 Ollama connection error: {e}")
+            raise Exception(f"Ollama connection error: {e}")
+        except Exception as e:
+            print(f"❌ Failed to call Ollama: {type(e).__name__}: {e}")
+            raise Exception(f"Failed to call Ollama: {type(e).__name__}: {e}")
     
     def _fallback_response(self, question: str) -> Dict:
         """Fallback response when AI is unavailable"""
