@@ -174,9 +174,12 @@ onUnmounted(() => {
 
 .trust-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   margin-bottom: 4rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .trust-item {
@@ -325,21 +328,31 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
+/* Tablet Responsiveness */
+@media (max-width: 900px) {
+  .trust-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 600px;
+  }
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .trust-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    max-width: 500px;
   }
-  
+
   .service-area {
     padding: 2rem;
   }
-  
+
   .cities-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .credentials {
     flex-direction: column;
     align-items: center;
