@@ -151,7 +151,7 @@ YOUR ROLE:
                 "success": True
             }
             
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, aiohttp.ClientTimeout):
             # Fallback to faster model if timeout
             if tier != ModelTier.FAST:
                 return await self.generate_response(question, ModelTier.FAST)

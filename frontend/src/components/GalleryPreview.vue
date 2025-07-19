@@ -149,25 +149,42 @@ const currentImageIndex = ref(0)
 const carouselOpen = ref(false)
 const currentCarouselIndex = ref(0)
 
-// Complete gallery with high-resolution images
+// Complete gallery with high-resolution Midjourney images (prioritizing fresh ones)
 const allGalleryImages = [
-  // Hero Images (4 high-res images)
-  { src: '/assets/gallery/hero/hero-main-hd.png', title: 'Stone Fabrication Workshop', category: 'Workshop', type: 'hero' },
-  { src: '/assets/gallery/hero/hero-showroom-hd.png', title: 'Kitchen Showroom Display', category: 'Showroom', type: 'hero' },
-  { src: '/assets/gallery/hero/hero-kitchen-hd.png', title: 'Luxury Kitchen Installation', category: 'Kitchen', type: 'hero' },
-  { src: '/assets/gallery/hero/hero-workshop-hd.png', title: 'Professional Workshop', category: 'Workshop', type: 'hero' },
+  // Fresh Hero Images - Professional Workshop & Showroom
+  { src: '/assets/gallery/u6358423361_Professional_stone_fabrication_workshop_with_gran_b43cb579-df0b-4d0e-afa0-00fc79398a29_0.png', title: 'Professional Stone Fabrication Workshop', category: 'Workshop', type: 'hero' },
+  { src: '/assets/gallery/u6358423361_Elegant_kitchen_showroom_with_luxury_custom_cabin_61b843dd-aade-44f3-8a80-589531215813_0.png', title: 'Luxury Kitchen Showroom Display', category: 'Showroom', type: 'hero' },
+  { src: '/assets/gallery/u6358423361_Stone_fabrication_facility_with_multiple_granite__8e5f3a86-1923-43e0-803c-b65cad517253_0.png', title: 'Stone Fabrication Facility', category: 'Workshop', type: 'hero' },
+  { src: '/assets/gallery/u6358423361_Organized_fabrication_workshop_granite_slabs_rack_d8f3cb06-5d92-4452-adfc-2bb07056cf61_0.png', title: 'Organized Workshop with Granite Slabs', category: 'Workshop', type: 'hero' },
 
-  // Project Gallery (high-resolution project images)
-  { src: '/assets/gallery/projects/kitchen-granite-hd.png', title: 'Modern Kitchen with Granite Countertops', category: 'Countertops', type: 'project' },
-  { src: '/assets/gallery/projects/custom-cabinets-hd.png', title: 'Custom Oak Kitchen Cabinets', category: 'Cabinets', type: 'project' },
-  { src: '/assets/gallery/projects/bathroom-marble-hd.png', title: 'Luxury Marble Bathroom', category: 'Stone Fabrication', type: 'project' },
+  // Fresh Project Gallery - Luxury Kitchens
+  { src: '/assets/gallery/u6358423361_High-end_modern_kitchen_interior_with_seamless_gr_048e8b83-c6bd-4ff7-ada2-6146454c9738_0.png', title: 'High-End Modern Kitchen with Seamless Granite', category: 'Countertops', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Luxury_modern_kitchen_with_beautiful_granite_coun_07a300a5-aa75-4625-8165-3dcb4fe28efa_0.png', title: 'Luxury Modern Kitchen with Beautiful Granite Countertops', category: 'Countertops', type: 'project' },
+  { src: '/assets/gallery/u6358423361_Luxury_kitchen_interior_with_handcrafted_oak_cabi_6ac455ef-ff90-49ca-baf3-971aab706a90_0.png', title: 'Luxury Kitchen with Handcrafted Oak Cabinets', category: 'Cabinets', type: 'project' },
   { src: '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_0.png', title: 'Commercial Laminate Installation', category: 'Plastics & Laminate', type: 'project' },
   { src: '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_0.png', title: 'Custom Tile Pattern Flooring', category: 'Tile & Flooring', type: 'project' },
   { src: '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_0.png', title: 'Commercial Interior Painting', category: 'Commercial Painting', type: 'project' },
   { src: '/assets/gallery/u6358423361_Collection_of_granite_slab_samples_natural_stone__668014ef-391a-49d5-90e0-b50532401f32_2.png', title: 'Premium Granite Selection', category: 'Materials', type: 'material' },
   { src: '/assets/gallery/u6358423361_Various_wood_species_samples_for_custom_cabinets__0ccfe8f4-934d-4f62-bf68-c4208c673a0e_0.png', title: 'Wood Species Showcase', category: 'Materials', type: 'material' },
   { src: '/assets/gallery/u6358423361_Modern_engineered_quartz_surfaces_consistent_patt_9bad55a7-8119-4466-b1b1-09e31a28fd21_2.png', title: 'Engineered Quartz Surfaces', category: 'Materials', type: 'material' },
-  
+
+  // Additional Fresh Projects - Process & Installation
+  { src: '/assets/gallery/u6358423361_Two_professional_installers_placing_granite_count_491ff5d7-6a78-4489-ab8c-fe175aa45122_0.png', title: 'Professional Granite Countertop Installation', category: 'Installation', type: 'process' },
+  { src: '/assets/gallery/u6358423361_Craftsman_measuring_granite_slab_with_precision_t_8bc71f32-8315-422f-8907-45f0c659a0d4_0.png', title: 'Precision Granite Measurement', category: 'Process', type: 'process' },
+  { src: '/assets/gallery/u6358423361_Granite_slab_on_CNC_machine_being_precision-cut_s_b216cc85-4d98-405d-86cf-c2763d86530f_0.png', title: 'CNC Precision Stone Cutting', category: 'Fabrication', type: 'process' },
+  { src: '/assets/gallery/u6358423361_CNC_stone_cutting_machine_in_action_precision_fab_ab6cd175-5d15-4e71-bf0b-8e7d076e0ee8_1.png', title: 'CNC Stone Cutting Machine in Action', category: 'Fabrication', type: 'process' },
+
+  // Fresh Detail Shots
+  { src: '/assets/gallery/u6358423361_Granite_countertop_edge_detail_close-up_natural_s_015d5930-2d54-49b1-9835-5551d915619a_1.png', title: 'Granite Countertop Edge Detail', category: 'Details', type: 'detail' },
+  { src: '/assets/gallery/u6358423361_Close-up_of_custom_cabinet_door_profile_rich_wood_1b57e59b-8f33-4d10-8a86-c98d5ddad455_0.png', title: 'Custom Cabinet Door Profile Detail', category: 'Details', type: 'detail' },
+  { src: '/assets/gallery/u6358423361_Close-up_of_tile_layout_with_precision_spacing_cl_3dd293a3-dd1f-4e27-ba1b-10e2831462f2_0.png', title: 'Precision Tile Layout Detail', category: 'Details', type: 'detail' },
+  { src: '/assets/gallery/u6358423361_Matte_laminate_close-up_texture_layered_panel_edg_ee88191a-7a92-472c-847e-aa3cadbd6491_0.png', title: 'Matte Laminate Texture Detail', category: 'Details', type: 'detail' },
+
+  // Keep some original images for variety
+  { src: '/assets/gallery/projects/project-1.jpg', title: 'Custom Kitchen Renovation', category: 'Kitchen', type: 'project' },
+  { src: '/assets/gallery/projects/project-3.jpg', title: 'Granite Countertop Installation', category: 'Countertops', type: 'project' },
+  { src: '/assets/gallery/projects/project-5.jpg', title: 'Commercial Flooring Project', category: 'Flooring', type: 'project' },
+
   // Service Icons (6 images)
   { src: '/assets/icons/services/cabinets.jpg', title: 'Custom Cabinet Services', category: 'Services', type: 'service' },
   { src: '/assets/icons/services/countertops.jpg', title: 'Countertop Installation', category: 'Services', type: 'service' },
