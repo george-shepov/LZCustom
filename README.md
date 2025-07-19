@@ -1,88 +1,138 @@
 # 🏗️ LZ Custom Fabrication - Premium Website with AI Assistant
 
-A sophisticated, production-ready website for LZ Custom Fabrication, Northeast Ohio's premier custom cabinet and stone fabrication company with 30+ years of excellence. Features working AI chat assistant, professional industrial design, and comprehensive business functionality.
+A sophisticated, production-ready website for LZ Custom Fabrication, Northeast Ohio's premier custom cabinet and stone fabrication company with 30+ years of excellence. Features working AI chat assistant, professional Midjourney-generated gallery, comprehensive database logging, and automated Ubuntu deployment.
 
 ## 🎯 Key Features
 
 ### 🤖 **AI-Powered Customer Service**
 - **Local LLaMA Integration**: qwen2.5:7b-instruct-q4_k_m model for intelligent responses
-- **Smart Model Routing**: Automatic selection based on question complexity
+- **Smart Model Routing**: Automatic selection based on question complexity (FAST/MEDIUM/ADVANCED/EXPERT)
 - **Professional Context**: 30+ years of LZ Custom expertise built into AI responses
-- **Real-time Chat**: 8-15 second response times with fallback support
+- **Real-time Chat**: 8-15 second response times with session tracking
 - **Customer-focused**: Encourages calls and quote requests naturally
+- **Math & Logic**: Handles basic calculations (2+2=4) while maintaining company personality
+
+### 🖼️ **Professional Midjourney Gallery**
+- **Fresh AI-Generated Images**: High-quality Midjourney images prioritizing latest creations
+- **Workshop & Showroom**: Professional fabrication facility and luxury showroom displays
+- **Project Showcase**: Luxury kitchens, bathrooms, commercial installations
+- **Process Documentation**: Installation, measurement, CNC cutting, craftsmanship details
+- **Material Close-ups**: Granite edges, cabinet profiles, tile layouts, laminate textures
+- **Mixed Collection**: Fresh images prioritized while maintaining variety with originals
 
 ### 🎨 **Industrial Design Excellence**
 - **Prominent "LZ Custom" Branding**: Bold, sophisticated typography that commands attention
 - **Industrial Fonts**: Oswald, Roboto Condensed, Playfair Display for premium feel
 - **Glassmorphism Effects**: Modern hero badges with backdrop blur and hover animations
 - **Professional Color Scheme**: Orange brand accents with clean, trustworthy design
-- **Visual Hierarchy**: Icons above titles, proper spacing, mobile-optimized layouts
+- **Visual Hierarchy**: Clean 2x2 grid layouts, proper spacing, mobile-optimized designs
+
+### 🗄️ **Comprehensive Database Logging**
+- **Chat Conversations**: Every user message and AI response logged with session tracking
+- **Quote Form Submissions**: Complete prospect data with project details and priority assignment
+- **Session Management**: Unique session IDs for conversation continuity
+- **Analytics Dashboard**: Real-time metrics, model usage, conversion tracking
+- **Business Intelligence**: Customer inquiry patterns, response times, success rates
 
 ### 🏢 **Complete Business Platform**
 1. **Hero Section**: Massive branding with professional badges and clear value props
-2. **Services Grid**: Interactive cards with proper visual hierarchy and hover effects
-3. **AI Chat Widget**: Working customer service assistant with company knowledge
-4. **Quote System**: Lead capture with SQLite database and prospect management
-5. **Responsive Design**: Perfect scaling from mobile to desktop
-6. **Professional Footer**: Complete company information and contact details
+2. **Services Grid**: Interactive cards with detailed modals, pricing, and helpful tips
+3. **AI Chat Widget**: Working customer service assistant with comprehensive company knowledge
+4. **Professional Quote System**: Multi-step form with project-specific fields and budget tracking
+5. **Gallery Carousel**: Full-screen image viewer with professional project photography
+6. **Trust Section**: Clean 2x2 grid showcasing 30+ years of expertise and credentials
 
 ### ⚡ **Technical Excellence**
 - **Vue.js 3 + Vite**: Modern frontend with fast development and build times
-- **FastAPI Backend**: Python API with SQLite database for prospect management
-- **Local AI Models**: No external API dependencies, complete privacy
-- **CORS Configuration**: Proper frontend-backend integration
-- **Error Handling**: Comprehensive logging and graceful fallbacks
-- **Production Ready**: Optimized for performance and reliability
+- **FastAPI Backend**: Python API with SQLite database for prospect and conversation management
+- **Local AI Models**: No external API dependencies, complete privacy and control
+- **Session Tracking**: Persistent conversation history with user analytics
+- **Error Handling**: Comprehensive logging, graceful fallbacks, and user-friendly messages
+- **Production Ready**: Automated deployment, systemd services, nginx reverse proxy
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 🐧 **Automated Ubuntu Setup (Recommended)**
+
+For production deployment on Ubuntu server:
+
+```bash
+# Clone repository
+git clone https://github.com/george-shepov/LZCustom.git
+cd LZCustom
+
+# Run automated provisioning script
+chmod +x provision-ubuntu.sh
+./provision-ubuntu.sh
+```
+
+**What the script installs:**
+- Node.js 18.x, Python 3.8+, Ollama
+- AI models: qwen2.5:7b-instruct-q4_k_m, gemma3:4b, llama3.2:3b (10GB+ total)
+- Nginx reverse proxy, systemd services
+- UFW firewall configuration
+- Auto-start services on boot
+
+### 🚀 **Development Setup**
+
+For local development:
+
+```bash
+# Clone repository
+git clone https://github.com/george-shepov/LZCustom.git
+cd LZCustom
+
+# Quick development setup
+chmod +x dev-setup.sh
+./dev-setup.sh
+
+# Start development servers
+./start-dev.sh
+```
+
+### 📋 **Manual Setup (if needed)**
+
+#### Prerequisites
 - **Node.js 18+** (for frontend)
 - **Python 3.8+** (for backend AI service)
 - **Ollama** (for local AI models)
-- **npm or yarn**
+- **10GB+ disk space** (for AI models)
 
-### Installation & Setup
-
-#### 1. Clone Repository
-```bash
-git clone https://github.com/george-shepov/LZCustom.git
-cd LZCustom
-```
-
-#### 2. Setup Frontend
+#### 1. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
-# Frontend runs on http://localhost:5173
+# Frontend: http://localhost:5173
 ```
 
-#### 3. Setup Backend (AI Chat)
+#### 2. Backend Setup
 ```bash
 cd backend
-pip install fastapi uvicorn aiohttp sqlite3
+python3 -m venv venv
+source venv/bin/activate
+pip install fastapi uvicorn aiohttp pydantic
 python main.py
-# Backend runs on http://localhost:8000
+# Backend: http://localhost:8000
 ```
 
-#### 4. Setup AI Models (Optional)
+#### 3. AI Models Setup
 ```bash
-# Install Ollama (if not already installed)
+# Install Ollama
 curl -fsSL https://ollama.ai/install.sh | sh
 
-# Download AI models
-ollama pull qwen2.5:7b-instruct-q4_k_m
-ollama pull llama3.2:3b
-ollama pull gemma3:4b
-
-# Models will auto-load when backend starts
+# Download AI models (this takes time!)
+ollama pull qwen2.5:7b-instruct-q4_k_m  # 4.7GB - Primary model
+ollama pull gemma3:4b                    # 3.3GB - Medium complexity
+ollama pull llama3.2:3b                  # 2GB - Fast responses
 ```
 
-### 🎯 **Ready to Use!**
+### 🎯 **Access Points**
 - **Website**: http://localhost:5173
-- **AI Chat**: Click the chat widget to test
-- **Backend API**: http://localhost:8000/docs
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Analytics Dashboard**: http://localhost:8000/api/analytics/dashboard
+- **Chat Conversations**: http://localhost:8000/api/chat/conversations
 
 ## 📱 Responsive Design
 
@@ -114,43 +164,97 @@ The landing page is fully responsive and optimized for:
 
 ## 🏢 Business Information
 
-**LZ Custom Fabrication**
-- **Phone**: 216-268-2990
-- **Experience**: 30+ Years in Business
-- **Specialties**: Custom Cabinets, Countertops, Stone Fabrication, Commercial Services
-- **Service Area**: Cleveland, Akron, Canton, Youngstown, Lorain, Ashtabula & surrounding areas
+**LZ Custom Fabrication** - Northeast Ohio's premier custom fabrication company with 30+ years of excellence.
 
-### Services
-1. **Custom Cabinets**: Handcrafted woodwork for kitchens and baths
-2. **Countertops**: Granite, Quartzite, Marble, Engineered Quartz
-3. **Stone Fabrication**: Precision cutting and installation
-4. **Plastics & Laminate**: Durable commercial surfaces
-5. **Tile & Flooring**: Expert installation with lasting finish
-6. **Commercial Painting**: Interior and exterior professional services
+### Contact & Service
+- **Phone**: 216-268-2990
+- **Business Hours**: Monday-Friday 8:00 AM - 5:00 PM
+- **Service Area**: 30-mile radius from Cleveland (free consultations)
+- **Experience**: 30+ years in custom fabrication and design
+- **Credentials**: Licensed, insured, bonded with A+ BBB rating
+
+### Services & Investment Ranges
+1. **Custom Cabinets**: $15,000 - $50,000+ (Oak, Maple, Cherry, Walnut)
+2. **Countertops**: $3,000 - $15,000+ (Granite, Quartz, Marble, Engineered Stone)
+3. **Stone Fabrication**: $2,500 - $12,000+ (CNC cutting, edge profiling, installation)
+4. **Plastics & Laminate**: $1,500 - $8,000+ (Commercial and residential applications)
+5. **Tile & Flooring**: $2,000 - $10,000+ (Expert installation, geometric patterns)
+6. **Commercial Painting**: Custom quotes (Professional interior/exterior coatings)
+
+### Typical Project Timelines
+- **Countertops**: 2-3 weeks from template to installation
+- **Custom Cabinets**: 4-8 weeks depending on complexity and materials
+- **Stone Fabrication**: 1-3 weeks for most residential projects
+- **Commercial Projects**: 2-12 weeks based on scope and specifications
+
+## 📊 Management & Analytics
+
+### Database Logging
+- **Chat Conversations**: Every user message and AI response logged with session tracking
+- **Quote Submissions**: Complete prospect data with project details and priority assignment
+- **Session Analytics**: User behavior, conversation patterns, conversion tracking
+- **Business Intelligence**: Response times, model performance, customer insights
+
+### Admin Endpoints
+- **Analytics Dashboard**: http://localhost:8000/api/analytics/dashboard
+- **Chat Conversations**: http://localhost:8000/api/chat/conversations
+- **Chat Sessions**: http://localhost:8000/api/chat/sessions
+- **API Documentation**: http://localhost:8000/docs
+
+### Service Management (Ubuntu)
+```bash
+# Start/stop services
+sudo systemctl start lzcustom-backend
+sudo systemctl start lzcustom-frontend
+sudo systemctl start nginx
+
+# View logs
+sudo journalctl -u lzcustom-backend -f
+sudo journalctl -u lzcustom-frontend -f
+
+# Management scripts
+~/start-lzcustom.sh    # Start all services
+~/stop-lzcustom.sh     # Stop all services
+```
 
 ## 🛠 Technology Stack
 
 ### Frontend
 - **Vue.js 3**: Modern reactive framework with Composition API
 - **Vite**: Lightning-fast build tool and dev server
-- **CSS3**: Advanced styling with Grid, Flexbox, and CSS custom properties
+- **CSS3**: Advanced styling with Grid, Flexbox, glassmorphism effects
 - **Font Awesome**: Professional icon library
 - **Google Fonts**: Industrial typography (Oswald, Roboto Condensed, Playfair Display)
-- **Responsive Design**: Mobile-first approach with perfect scaling
+- **Responsive Design**: Mobile-first approach with perfect scaling across all devices
 
 ### Backend & AI
-- **FastAPI**: High-performance Python API framework
-- **SQLite**: Lightweight database for prospect management
-- **Ollama**: Local LLaMA model serving
+- **FastAPI**: High-performance Python API framework with automatic OpenAPI documentation
+- **SQLite**: Lightweight database with comprehensive logging (prospects, chat conversations, sessions)
+- **Ollama**: Local LLaMA model serving with no external dependencies
 - **aiohttp**: Async HTTP client for AI model communication
-- **qwen2.5:7b-instruct-q4_k_m**: Primary AI model for customer service
-- **Multi-model routing**: Intelligent selection based on query complexity
+- **Pydantic**: Data validation and serialization
+- **Session Management**: UUID-based conversation tracking with analytics
 
-### AI Models
-- **FAST**: llama3.2:3b (2GB) - Simple questions, business hours
-- **MEDIUM**: gemma3:4b (3.3GB) - General fabrication questions
-- **ADVANCED**: qwen2.5:7b-instruct-q4_k_m (4.7GB) - Technical specifications
-- **EXPERT**: llama4:16x17b (67GB) - Complex design consultations
+### AI Models & Intelligence
+- **FAST**: llama3.2:3b (2GB) - Simple questions, business hours, basic math
+- **MEDIUM**: gemma3:4b (3.3GB) - General fabrication questions, material advice
+- **ADVANCED**: qwen2.5:7b-instruct-q4_k_m (4.7GB) - Technical specifications, detailed quotes
+- **EXPERT**: llama4:16x17b (67GB) - Complex design consultations (optional)
+- **Smart Routing**: Automatic model selection based on question complexity
+- **Fallback System**: Graceful degradation with professional responses
+
+### Gallery & Media
+- **Midjourney AI**: Professional gallery images generated with custom prompts
+- **Image Optimization**: Multiple formats and resolutions for performance
+- **Carousel System**: Full-screen gallery with smooth transitions
+- **Category Filtering**: Workshop, projects, details, materials organization
+
+### Production Infrastructure
+- **Nginx**: Reverse proxy with load balancing and SSL termination
+- **Systemd**: Service management with auto-restart and logging
+- **UFW Firewall**: Security configuration with proper port management
+- **PM2**: Process management for Node.js applications (alternative)
+- **Ubuntu 20.04+**: Optimized for modern Linux distributions
 
 ## 📦 Project Structure
 
@@ -253,6 +357,57 @@ Try asking these questions:
 
 This project is proprietary and confidential. All rights reserved by LZ Custom Fabrication.
 
+## 🐧 Deployment Scripts
+
+### `provision-ubuntu.sh` - Production Setup
+Complete automated setup for Ubuntu servers:
+- System updates and essential packages
+- Node.js 18.x, Python 3.8+, Ollama installation
+- AI model downloads (10GB+ total)
+- Nginx reverse proxy configuration
+- Systemd services with auto-start
+- UFW firewall setup
+- Management scripts creation
+
+### `dev-setup.sh` - Development Environment
+Quick setup for local development:
+- Frontend and backend dependency installation
+- Virtual environment creation
+- Development scripts generation
+- System testing capabilities
+
+### Management Scripts (Created by provisioning)
+- `~/start-lzcustom.sh` - Start all services
+- `~/stop-lzcustom.sh` - Stop all services
+- `./start-dev.sh` - Development servers
+- `./test-system.sh` - System verification
+
+## 🎯 Testing & Verification
+
+### AI Chat Testing
+```bash
+# Test basic math
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is 2+2?"}'
+
+# Test business questions
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What services do you offer?"}'
+```
+
+### Database Testing
+```bash
+# Test quote submission
+curl -X POST http://localhost:8000/api/prospects \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test User", "email": "test@example.com", "phone": "216-555-0123", "project": "countertops", "message": "Test quote"}'
+
+# View analytics
+curl http://localhost:8000/api/analytics/dashboard
+```
+
 ---
 
 **🏗️ Built with Excellence for LZ Custom Fabrication**
@@ -260,3 +415,5 @@ This project is proprietary and confidential. All rights reserved by LZ Custom F
 
 **Repository**: https://github.com/george-shepov/LZCustom
 **Live Demo**: http://localhost:5173 (when running locally)
+
+🎉 **Production-ready website with working AI chat, comprehensive database logging, beautiful Midjourney gallery, and automated Ubuntu deployment!**
