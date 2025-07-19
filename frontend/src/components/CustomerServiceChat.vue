@@ -107,6 +107,7 @@ const chatMessages = ref(null)
 const activeBubbles = ref([])
 const currentMessage = ref('')
 const isTyping = ref(false)
+const sessionId = ref(null) // Track conversation session
 
 const messages = ref([
   {
@@ -265,11 +266,18 @@ const sendMessageToAI = async (userMessage) => {
       },
       body: JSON.stringify({
         message: userMessage,
-        context: 'customer_service'
+        context: 'customer_service',
+        session_id: sessionId.value // Include session ID for conversation tracking
       })
     })
 
     const data = await response.json()
+
+    // Store session ID for future messages
+    if (data.session_id) {
+      sessionId.value = data.session_id
+      console.log('Chat session:', data.session_id) // For debugging
+    }
 
     if (data.success) {
       // Add model info for transparency
@@ -278,7 +286,7 @@ const sendMessageToAI = async (userMessage) => {
 
       // Add performance info in development
       if (window.location.hostname === 'localhost') {
-        addMessage(`💡 Answered by ${data.model_used} in ${data.response_time}s`)
+        addMessage(`💡 Answered by ${data.model_used} in ${data.response_time}s (Session: ${data.session_id.substring(0, 8)}...)`)
       }
     } else {
       addMessage(data.response)

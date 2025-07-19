@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 import uvicorn
 import asyncio
+import uuid
 from llama_service import LLaMAService, QuestionClassifier
 
 app = FastAPI(title="LZ Custom API", version="1.0.0")
@@ -72,7 +73,39 @@ def init_db():
             FOREIGN KEY (prospect_id) REFERENCES prospects (id)
         )
     ''')
-    
+
+    # Chat conversations table for logging all AI interactions
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS chat_conversations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT,
+            user_message TEXT NOT NULL,
+            ai_response TEXT NOT NULL,
+            model_used TEXT NOT NULL,
+            tier TEXT NOT NULL,
+            response_time REAL,
+            success BOOLEAN DEFAULT 1,
+            error_message TEXT,
+            user_ip TEXT,
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # Chat sessions table for tracking conversation sessions
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS chat_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT UNIQUE NOT NULL,
+            started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            message_count INTEGER DEFAULT 0,
+            user_ip TEXT,
+            user_agent TEXT,
+            status TEXT DEFAULT 'active'
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -95,6 +128,7 @@ class ChatMessage(BaseModel):
     message: str
     context: Optional[str] = None
     force_tier: Optional[str] = None  # For testing specific models
+    session_id: Optional[str] = None  # For conversation tracking
 
 class ChatResponse(BaseModel):
     response: str
@@ -103,6 +137,53 @@ class ChatResponse(BaseModel):
     response_time: float
     success: bool
     error: Optional[str] = None
+    session_id: str  # Return session ID for frontend tracking
+
+# Helper functions for chat logging
+def create_or_update_session(session_id: str, user_ip: str = None, user_agent: str = None):
+    """Create or update a chat session"""
+    conn = sqlite3.connect('lz_custom.db')
+    cursor = conn.cursor()
+
+    # Check if session exists
+    cursor.execute('SELECT id FROM chat_sessions WHERE session_id = ?', (session_id,))
+    if cursor.fetchone():
+        # Update existing session
+        cursor.execute('''
+            UPDATE chat_sessions
+            SET last_activity = CURRENT_TIMESTAMP, message_count = message_count + 1
+            WHERE session_id = ?
+        ''', (session_id,))
+    else:
+        # Create new session
+        cursor.execute('''
+            INSERT INTO chat_sessions (session_id, user_ip, user_agent, message_count)
+            VALUES (?, ?, ?, 1)
+        ''', (session_id, user_ip, user_agent))
+
+    conn.commit()
+    conn.close()
+
+def log_chat_conversation(session_id: str, user_message: str, ai_response: str,
+                         model_used: str, tier: str, response_time: float,
+                         success: bool, error_message: str = None,
+                         user_ip: str = None, user_agent: str = None):
+    """Log a complete chat interaction"""
+    conn = sqlite3.connect('lz_custom.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        INSERT INTO chat_conversations (
+            session_id, user_message, ai_response, model_used, tier,
+            response_time, success, error_message, user_ip, user_agent
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        session_id, user_message, ai_response, model_used, tier,
+        response_time, success, error_message, user_ip, user_agent
+    ))
+
+    conn.commit()
+    conn.close()
 
 # Global LLaMA service instance
 llama_service = None
@@ -260,21 +341,46 @@ async def update_prospect_status(prospect_id: int, status: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/chat", response_model=ChatResponse)
-async def chat_with_ai(message: ChatMessage):
+async def chat_with_ai(message: ChatMessage, request: Request):
     """
-    Chat with local LLaMA models with intelligent routing
+    Chat with local LLaMA models with intelligent routing and comprehensive logging
     """
     global llama_service
 
+    # Generate session ID if not provided
+    session_id = message.session_id or str(uuid.uuid4())
+    user_ip = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent", "")
+
+    # Create or update session
+    create_or_update_session(session_id, user_ip, user_agent)
+
     if not llama_service:
-        return ChatResponse(
+        fallback_response = ChatResponse(
             response="AI assistant is currently unavailable. Please call us at 216-268-2990 for immediate assistance!",
             model_used="fallback",
             tier="FALLBACK",
             response_time=0,
             success=False,
-            error="LLaMA service not initialized"
+            error="LLaMA service not initialized",
+            session_id=session_id
         )
+
+        # Log the fallback response
+        log_chat_conversation(
+            session_id=session_id,
+            user_message=message.message,
+            ai_response=fallback_response.response,
+            model_used="fallback",
+            tier="FALLBACK",
+            response_time=0,
+            success=False,
+            error_message="LLaMA service not initialized",
+            user_ip=user_ip,
+            user_agent=user_agent
+        )
+
+        return fallback_response
 
     try:
         # Force specific tier if requested (for testing)
@@ -294,17 +400,51 @@ async def chat_with_ai(message: ChatMessage):
             tier=force_tier
         )
 
+        # Add session_id to response
+        result["session_id"] = session_id
+
+        # Log successful conversation
+        log_chat_conversation(
+            session_id=session_id,
+            user_message=message.message,
+            ai_response=result["response"],
+            model_used=result["model_used"],
+            tier=result["tier"],
+            response_time=result["response_time"],
+            success=result["success"],
+            error_message=None,
+            user_ip=user_ip,
+            user_agent=user_agent
+        )
+
         return ChatResponse(**result)
 
     except Exception as e:
-        return ChatResponse(
+        error_response = ChatResponse(
             response="I'm experiencing technical difficulties. Please call 216-268-2990 for immediate assistance.",
             model_used="error",
             tier="ERROR",
             response_time=0,
             success=False,
-            error=str(e)
+            error=str(e),
+            session_id=session_id
         )
+
+        # Log error conversation
+        log_chat_conversation(
+            session_id=session_id,
+            user_message=message.message,
+            ai_response=error_response.response,
+            model_used="error",
+            tier="ERROR",
+            response_time=0,
+            success=False,
+            error_message=str(e),
+            user_ip=user_ip,
+            user_agent=user_agent
+        )
+
+        return error_response
 
 @app.get("/api/chat/test")
 async def test_models():
@@ -344,6 +484,143 @@ async def test_models():
                 })
 
     return {"test_results": results}
+
+@app.get("/api/chat/conversations")
+async def get_chat_conversations(limit: int = 50, session_id: str = None):
+    """Get chat conversation history"""
+    try:
+        conn = sqlite3.connect('lz_custom.db')
+        cursor = conn.cursor()
+
+        if session_id:
+            cursor.execute('''
+                SELECT * FROM chat_conversations
+                WHERE session_id = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+            ''', (session_id, limit))
+        else:
+            cursor.execute('''
+                SELECT * FROM chat_conversations
+                ORDER BY created_at DESC
+                LIMIT ?
+            ''', (limit,))
+
+        conversations = []
+        columns = [description[0] for description in cursor.description]
+        for row in cursor.fetchall():
+            conversations.append(dict(zip(columns, row)))
+
+        conn.close()
+        return {"conversations": conversations}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/chat/sessions")
+async def get_chat_sessions(limit: int = 50):
+    """Get chat session summary"""
+    try:
+        conn = sqlite3.connect('lz_custom.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT cs.*,
+                   COUNT(cc.id) as total_messages,
+                   MAX(cc.created_at) as last_message_at
+            FROM chat_sessions cs
+            LEFT JOIN chat_conversations cc ON cs.session_id = cc.session_id
+            GROUP BY cs.session_id
+            ORDER BY cs.last_activity DESC
+            LIMIT ?
+        ''', (limit,))
+
+        sessions = []
+        columns = [description[0] for description in cursor.description]
+        for row in cursor.fetchall():
+            sessions.append(dict(zip(columns, row)))
+
+        conn.close()
+        return {"sessions": sessions}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/analytics/dashboard")
+async def get_analytics_dashboard():
+    """Get analytics dashboard data"""
+    try:
+        conn = sqlite3.connect('lz_custom.db')
+        cursor = conn.cursor()
+
+        # Prospect statistics
+        cursor.execute('SELECT COUNT(*) FROM prospects')
+        total_prospects = cursor.fetchone()[0]
+
+        cursor.execute('SELECT COUNT(*) FROM prospects WHERE created_at >= date("now", "-7 days")')
+        prospects_this_week = cursor.fetchone()[0]
+
+        cursor.execute('SELECT COUNT(*) FROM prospects WHERE status = "new"')
+        new_prospects = cursor.fetchone()[0]
+
+        # Chat statistics
+        cursor.execute('SELECT COUNT(*) FROM chat_conversations')
+        total_chats = cursor.fetchone()[0]
+
+        cursor.execute('SELECT COUNT(*) FROM chat_conversations WHERE created_at >= date("now", "-7 days")')
+        chats_this_week = cursor.fetchone()[0]
+
+        cursor.execute('SELECT COUNT(DISTINCT session_id) FROM chat_conversations')
+        unique_sessions = cursor.fetchone()[0]
+
+        # Model usage statistics
+        cursor.execute('''
+            SELECT model_used, COUNT(*) as usage_count
+            FROM chat_conversations
+            GROUP BY model_used
+            ORDER BY usage_count DESC
+        ''')
+        model_usage = [{"model": row[0], "count": row[1]} for row in cursor.fetchall()]
+
+        # Recent activity
+        cursor.execute('''
+            SELECT 'prospect' as type, name as title, created_at
+            FROM prospects
+            UNION ALL
+            SELECT 'chat' as type,
+                   SUBSTR(user_message, 1, 50) || '...' as title,
+                   created_at
+            FROM chat_conversations
+            ORDER BY created_at DESC
+            LIMIT 10
+        ''')
+        recent_activity = []
+        for row in cursor.fetchall():
+            recent_activity.append({
+                "type": row[0],
+                "title": row[1],
+                "created_at": row[2]
+            })
+
+        conn.close()
+
+        return {
+            "prospects": {
+                "total": total_prospects,
+                "this_week": prospects_this_week,
+                "new": new_prospects
+            },
+            "chats": {
+                "total": total_chats,
+                "this_week": chats_this_week,
+                "unique_sessions": unique_sessions
+            },
+            "model_usage": model_usage,
+            "recent_activity": recent_activity
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
