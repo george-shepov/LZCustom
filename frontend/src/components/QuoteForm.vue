@@ -83,6 +83,8 @@
                       class="project-card"
                       :class="{ 'selected': form.project === projectType.value }"
                       @click="selectProject(projectType.value)"
+                      @mouseenter="showProjectHelp(projectType.value)"
+                      @mouseleave="hideProjectHelp"
                     >
                       <div class="project-preview">
                         <img :src="projectType.images[0]" :alt="projectType.label" />
@@ -98,6 +100,16 @@
                       </div>
                       <div class="selection-indicator">
                         <i class="fas fa-check"></i>
+                      </div>
+                      <div class="project-help-tooltip" v-if="activeProjectHelp === projectType.value">
+                        <div class="tooltip-content">
+                          <h5>{{ getProjectHelpTitle(projectType.value) }}</h5>
+                          <p>{{ getProjectHelpText(projectType.value) }}</p>
+                          <div class="help-stats">
+                            <span><i class="fas fa-clock"></i> {{ getProjectTimeline(projectType.value) }}</span>
+                            <span><i class="fas fa-dollar-sign"></i> {{ getProjectBudgetRange(projectType.value) }}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -200,8 +212,28 @@
                 <h3>Project Description</h3>
                 <div class="form-group">
                   <label for="message">Tell us about your project *</label>
-                  <textarea id="message" v-model="form.message" rows="5" required
-                    placeholder="Describe your vision, style preferences, any challenges, and what you hope to achieve..."></textarea>
+                  <div class="input-with-help">
+                    <textarea
+                      id="message"
+                      v-model="form.message"
+                      rows="5"
+                      required
+                      @focus="showDescriptionHelp = true"
+                      @blur="showDescriptionHelp = false"
+                      placeholder="Describe your vision, style preferences, any challenges, and what you hope to achieve..."
+                    ></textarea>
+                    <div class="help-bubble-inline" v-if="showDescriptionHelp">
+                      <div class="help-content">
+                        <h4><i class="fas fa-lightbulb"></i> Pro Tips for Better Estimates:</h4>
+                        <ul>
+                          <li>Include room dimensions if known</li>
+                          <li>Mention your style preferences (modern, traditional, etc.)</li>
+                          <li>Share your timeline and budget range</li>
+                          <li>Note any special requirements or challenges</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -239,6 +271,8 @@ import { ref, computed } from 'vue'
 const isSubmitting = ref(false)
 const showSuccess = ref(false)
 const successMessage = ref('')
+const showDescriptionHelp = ref(false)
+const activeProjectHelp = ref(null)
 
 const form = ref({
   name: '',
@@ -536,6 +570,62 @@ const resetForm = () => {
     measurements: ''
   }
 }
+
+const showProjectHelp = (projectValue) => {
+  activeProjectHelp.value = projectValue
+}
+
+const hideProjectHelp = () => {
+  activeProjectHelp.value = null
+}
+
+const getProjectHelpTitle = (projectValue) => {
+  const titles = {
+    'custom-cabinets': 'Custom Cabinet Installation',
+    'countertops': 'Countertop Fabrication & Install',
+    'stone-fabrication': 'Stone Fabrication Services',
+    'plastics-laminate': 'Commercial Surface Solutions',
+    'tile-flooring': 'Tile & Flooring Installation',
+    'commercial-painting': 'Commercial Painting Services'
+  }
+  return titles[projectValue] || 'Project Information'
+}
+
+const getProjectHelpText = (projectValue) => {
+  const descriptions = {
+    'custom-cabinets': 'Full-service cabinet design, fabrication, and installation using premium hardwoods. Includes soft-close hardware and custom storage solutions.',
+    'countertops': 'Professional templating, precision cutting, and expert installation of natural stone surfaces with lifetime craftsmanship warranty.',
+    'stone-fabrication': 'Complete stone fabrication services including cutting, polishing, and edge profiling for residential and commercial projects.',
+    'plastics-laminate': 'Durable, chemical-resistant surfaces perfect for high-traffic commercial environments with easy maintenance requirements.',
+    'tile-flooring': 'Expert tile installation with waterproof systems, precision layout, and professional grouting for lasting results.',
+    'commercial-painting': 'Industrial-grade coatings and finishes designed for commercial environments with superior durability and protection.'
+  }
+  return descriptions[projectValue] || 'Professional installation and fabrication services.'
+}
+
+const getProjectTimeline = (projectValue) => {
+  const timelines = {
+    'custom-cabinets': '4-6 weeks',
+    'countertops': '2-3 weeks',
+    'stone-fabrication': '2-4 weeks',
+    'plastics-laminate': '1-2 weeks',
+    'tile-flooring': '1-3 weeks',
+    'commercial-painting': '1-2 weeks'
+  }
+  return timelines[projectValue] || '2-4 weeks'
+}
+
+const getProjectBudgetRange = (projectValue) => {
+  const budgets = {
+    'custom-cabinets': '$15k-50k+',
+    'countertops': '$3k-15k',
+    'stone-fabrication': '$2k-20k',
+    'plastics-laminate': '$1k-10k',
+    'tile-flooring': '$2k-12k',
+    'commercial-painting': '$1k-8k'
+  }
+  return budgets[projectValue] || 'Varies'
+}
 </script>
 
 <style scoped>
@@ -738,6 +828,77 @@ const resetForm = () => {
   box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.input-with-help {
+  position: relative;
+}
+
+.help-bubble-inline {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin-top: 0.5rem;
+  animation: slideDown 0.3s ease;
+}
+
+.help-content {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+  position: relative;
+}
+
+.help-content::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  border: 8px solid transparent;
+  border-bottom-color: #f39c12;
+}
+
+.help-content h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.help-content ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: none;
+}
+
+.help-content li {
+  margin-bottom: 0.5rem;
+  position: relative;
+  line-height: 1.4;
+}
+
+.help-content li::before {
+  content: '✓';
+  position: absolute;
+  left: -1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Project Selection Styles */
 .project-selection {
   margin-bottom: 2rem;
@@ -784,10 +945,81 @@ const resetForm = () => {
   transition: transform 0.3s ease;
 }
 
+.project-card {
+  position: relative;
+}
+
 .project-card:hover {
   border-color: #f39c12;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(243, 156, 18, 0.15);
+}
+
+.project-help-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin-top: 0.5rem;
+  animation: fadeInUp 0.3s ease;
+}
+
+.tooltip-content {
+  background: white;
+  border: 2px solid #f39c12;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.2);
+  position: relative;
+}
+
+.tooltip-content::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  border: 8px solid transparent;
+  border-bottom-color: #f39c12;
+}
+
+.tooltip-content h5 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tooltip-content p {
+  margin: 0 0 0.75rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.help-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #f39c12;
+  font-weight: 500;
+}
+
+.help-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .project-card.selected {
