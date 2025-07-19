@@ -205,7 +205,7 @@ const getServiceModalData = (service) => {
     'Custom Cabinets': {
       icon: 'fas fa-hammer',
       title: 'Custom Cabinet Fabrication',
-      image: '/images/custom-cabinets-hero.jpg',
+      image: '/assets/gallery/u6358423361_Luxury_kitchen_interior_with_handcrafted_oak_cabi_6ac455ef-ff90-49ca-baf3-971aab706a90_0.png',
       content: [
         'Transform your kitchen or bathroom with handcrafted custom cabinets built to your exact specifications. Our master craftsmen use premium hardwoods and time-tested techniques to create cabinets that will last generations.',
         'Every cabinet is designed and built in our Northeast Ohio workshop, ensuring the highest quality control and attention to detail. We work with you from initial design through final installation.'

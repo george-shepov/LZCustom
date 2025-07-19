@@ -510,10 +510,13 @@ onMounted(() => {
 .input-container input {
   flex: 1;
   padding: 0.75rem;
-  border: 1px solid #e9ecef;
+  border: 2px solid #d1d5db;
   border-radius: 20px;
   outline: none;
   font-size: 0.9rem;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .input-container input:focus {

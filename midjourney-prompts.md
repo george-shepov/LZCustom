@@ -130,6 +130,12 @@ Craftsman measuring granite slab with precision tools, professional templating, 
 Professional installation team installing custom countertops, precision fitting, teamwork, quality installation, residential kitchen, expert craftsmanship --ar 4:3 --style raw --v 6
 ```
 
+
+
+
+
+
+
 ## Material Showcase Images
 
 ### Granite Varieties
