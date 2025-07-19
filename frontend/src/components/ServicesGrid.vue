@@ -7,14 +7,17 @@
         <p class="section-subtitle">Comprehensive fabrication and installation services with over 30 years of experience</p>
       </div>
 
-      <div class="services-grid">
-        <div
-          class="service-card"
-          v-for="service in services"
-          :key="service.title"
-          @mouseenter="playHoverSound"
-          @click="openServiceModal(service)"
-        >
+      <!-- Primary Services Row -->
+      <div class="services-category">
+        <h3 class="category-title">Core Fabrication Services</h3>
+        <div class="services-grid primary-services">
+          <div
+            class="service-card primary"
+            v-for="service in primaryServices"
+            :key="service.title"
+            @mouseenter="playHoverSound"
+            @click="openServiceModal(service)"
+          >
           <div class="service-icon">
             <i :class="service.icon"></i>
           </div>
@@ -24,6 +27,7 @@
             <p class="service-description">{{ service.description }}</p>
 
             <div class="service-features">
+              <h4 class="features-subhead">{{ service.subhead || 'Services' }}</h4>
               <ul>
                 <li v-for="feature in service.features.slice(0, 3)" :key="feature">{{ feature }}</li>
               </ul>
@@ -47,24 +51,74 @@
             <i class="fas fa-arrow-right"></i>
           </div>
         </div>
+        </div>
+      </div>
+
+      <!-- Secondary Services Row -->
+      <div class="services-category">
+        <h3 class="category-title">Specialized Services</h3>
+        <div class="services-grid secondary-services">
+          <div
+            class="service-card secondary"
+            v-for="service in secondaryServices"
+            :key="service.title"
+            @mouseenter="playHoverSound"
+            @click="openServiceModal(service)"
+          >
+            <div class="service-icon">
+              <i :class="service.icon"></i>
+            </div>
+
+            <div class="service-content">
+              <h3 class="service-title">{{ service.title }}</h3>
+              <p class="service-description">{{ service.description }}</p>
+
+              <div class="service-features">
+                <h4 class="features-subhead">{{ service.subhead || 'Services' }}</h4>
+                <ul>
+                  <li v-for="feature in service.features.slice(0, 3)" :key="feature">{{ feature }}</li>
+                </ul>
+              </div>
+
+              <div class="service-materials" v-if="service.materials">
+                <div class="materials-label">Materials:</div>
+                <div class="materials-list">
+                  <span
+                    v-for="material in service.materials.slice(0, 4)"
+                    :key="material"
+                    class="material-tag"
+                  >
+                    {{ material }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="service-action">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="services-cta">
-        <h3>Ready to Start Your Project?</h3>
-        <p>Get a free consultation and quote for your custom fabrication needs</p>
-        <button @click="scrollToForm" class="btn-primary">Get Free Quote</button>
+        <h3>Let's Build Something Beautiful Together</h3>
+        <p>Transform your vision into reality with our expert craftsmanship and premium materials</p>
+        <button @click="scrollToForm" class="btn-primary">Start with a Free Custom Estimate Today</button>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-const services = [
+// Primary Services - Core offerings
+const primaryServices = [
   {
     title: 'Custom Cabinets',
     icon: 'fas fa-hammer',
     gradient: 'linear-gradient(135deg, #8B4513 0%, #A0522D 100%)',
     description: 'Handcrafted woodwork designed and built to your exact specifications.',
+    subhead: 'Craftsmanship',
     features: ['Custom door profiles', 'Soft-close hardware', 'Premium wood species', 'Built-in organizers'],
     materials: ['Oak', 'Maple', 'Cherry', 'Walnut']
   },
@@ -73,22 +127,29 @@ const services = [
     icon: 'fas fa-gem',
     gradient: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
     description: 'Premium natural and engineered stone surfaces for lasting beauty.',
+    subhead: 'Surfaces',
     features: ['Precision templating', 'Professional installation', 'Edge profiling', 'Seamless joints'],
     materials: ['Granite', 'Quartzite', 'Marble', 'Engineered Quartz']
   },
   {
     title: 'Engineered Stone',
     icon: 'fas fa-cube',
-    gradient: 'linear-gradient(135deg, #7F8C8D 0%, #95A5A6 100%)',
+    gradient: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)',
     description: 'Advanced engineered surfaces combining beauty with durability.',
+    subhead: 'Innovation',
     features: ['Non-porous surface', 'Stain resistant', 'Consistent patterns', 'Low maintenance'],
     materials: ['Porcelain', 'Ultra Compact', 'Engineered Quartz']
-  },
+  }
+]
+
+// Secondary Services - Specialized offerings
+const secondaryServices = [
   {
     title: 'Plastics & Laminate',
     icon: 'fas fa-layer-group',
     gradient: 'linear-gradient(135deg, #E74C3C 0%, #C0392B 100%)',
     description: 'Modern, durable surfaces perfect for commercial applications.',
+    subhead: 'Commercial',
     features: ['Chemical resistant', 'Easy to clean', 'Cost effective', 'Wide color range'],
     materials: ['HPL', 'Solid Surface', 'Thermoform', 'Acrylic']
   },
@@ -97,6 +158,7 @@ const services = [
     icon: 'fas fa-th',
     gradient: 'linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)',
     description: 'Expert installation of tile and flooring for lasting beauty.',
+    subhead: 'Install',
     features: ['Precision layout', 'Waterproof systems', 'Custom patterns', 'Professional grouting'],
     materials: ['Ceramic', 'Porcelain', 'Natural Stone', 'LVT']
   },
@@ -105,6 +167,7 @@ const services = [
     icon: 'fas fa-paint-roller',
     gradient: 'linear-gradient(135deg, #F39C12 0%, #E67E22 100%)',
     description: 'Professional interior and exterior painting services.',
+    subhead: 'Painting',
     features: ['Surface preparation', 'Premium coatings', 'Color matching', 'Protective finishes'],
     materials: ['Epoxy', 'Polyurethane', 'Acrylic', 'Specialty Coatings']
   }
@@ -175,11 +238,43 @@ const playHoverSound = () => {
   line-height: 1.6;
 }
 
+.services-category {
+  margin-bottom: 4rem;
+}
+
+.category-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.category-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  border-radius: 2px;
+}
+
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+}
+
+.primary-services {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.secondary-services {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .service-card {
@@ -196,6 +291,16 @@ const playHoverSound = () => {
   gap: 1rem;
 }
 
+.service-card.primary {
+  border: 2px solid #f39c12;
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.1);
+}
+
+.service-card.secondary {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
 .service-card::before {
   content: '';
   position: absolute;
@@ -210,8 +315,8 @@ const playHoverSound = () => {
 }
 
 .service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.15);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(243, 156, 18, 0.2);
   border-color: #f39c12;
 }
 
@@ -253,6 +358,16 @@ const playHoverSound = () => {
   margin-bottom: 1rem;
   line-height: 1.5;
   font-size: 0.95rem;
+}
+
+.features-subhead {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  margin-top: 0;
 }
 
 .service-features ul {

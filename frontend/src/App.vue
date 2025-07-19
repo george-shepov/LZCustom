@@ -1,21 +1,27 @@
 <template>
   <div id="app">
+    <Navigation />
     <HeroSection />
     <ServicesGrid />
     <TrustBlock />
     <GalleryPreview />
+    <Testimonials />
     <QuoteForm />
     <Footer />
+    <CustomerServiceChat />
   </div>
 </template>
 
 <script setup>
+import Navigation from './components/Navigation.vue'
 import HeroSection from './components/HeroSection.vue'
 import ServicesGrid from './components/ServicesGrid.vue'
 import TrustBlock from './components/TrustBlock.vue'
 import GalleryPreview from './components/GalleryPreview.vue'
+import Testimonials from './components/Testimonials.vue'
 import QuoteForm from './components/QuoteForm.vue'
 import Footer from './components/Footer.vue'
+import CustomerServiceChat from './components/CustomerServiceChat.vue'
 </script>
 
 <style>

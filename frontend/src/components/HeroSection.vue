@@ -2,7 +2,7 @@
 <template>
   <div class="hero-container">
     <div class="hero-background" :style="backgroundStyle"></div>
-    <div class="gradient-overlay"></div>
+    <div class="hero-overlay"></div>
 
     <div class="hero-content">
       <div class="container">
@@ -33,8 +33,20 @@
           </div>
 
           <div class="cta-buttons">
-            <button @click="scrollToForm" class="btn-primary">Request Free Consultation</button>
-            <button @click="scrollToGallery" class="btn-secondary">View Portfolio</button>
+            <button
+              @click="scrollToForm"
+              class="btn-primary"
+              aria-label="Request free consultation - scroll to quote form"
+            >
+              Request Free Consultation
+            </button>
+            <button
+              @click="scrollToGallery"
+              class="btn-secondary"
+              aria-label="View our portfolio - scroll to gallery section"
+            >
+              View Portfolio
+            </button>
           </div>
 
           <div class="contact-info">
@@ -129,6 +141,7 @@ const scrollToGallery = () => {
   min-height: 600px;
   overflow: hidden;
   width: 100%;
+  padding-top: 80px;
 }
 
 .hero-background {
@@ -171,9 +184,10 @@ const scrollToGallery = () => {
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(44, 62, 80, 0.8) 0%,
-    rgba(52, 73, 94, 0.7) 50%,
-    rgba(44, 62, 80, 0.8) 100%
+    rgba(44, 62, 80, 0.85) 0%,
+    rgba(52, 73, 94, 0.75) 30%,
+    rgba(44, 62, 80, 0.6) 70%,
+    rgba(44, 62, 80, 0.85) 100%
   );
   z-index: 2;
 }
@@ -240,12 +254,33 @@ const scrollToGallery = () => {
 .btn-primary {
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(243, 156, 18, 0.5);
+  background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+  outline: 2px solid #f39c12;
+  outline-offset: 2px;
 }
 
 .btn-secondary {
@@ -255,10 +290,13 @@ const scrollToGallery = () => {
   backdrop-filter: blur(10px);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:focus {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 @keyframes fadeInUp {

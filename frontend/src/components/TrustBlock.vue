@@ -7,8 +7,14 @@
           <p class="trust-subtitle">Trusted by Northeast Ohio for over three decades</p>
         </div>
         
-        <div class="trust-grid">
-          <div class="trust-item" v-for="item in trustItems" :key="item.title">
+        <div class="trust-grid" ref="trustGrid">
+          <div
+            class="trust-item"
+            v-for="(item, index) in trustItems"
+            :key="item.title"
+            :class="{ 'animate-in': isVisible }"
+            :style="{ animationDelay: `${index * 0.2}s` }"
+          >
             <div class="trust-icon">
               <i :class="item.icon"></i>
             </div>
@@ -50,6 +56,11 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const trustGrid = ref(null)
+const isVisible = ref(false)
+
 const trustItems = [
   {
     icon: 'fas fa-industry',
@@ -81,6 +92,30 @@ const cities = [
   'Lorain',
   'Ashtabula'
 ]
+
+let observer = null
+
+onMounted(() => {
+  if (trustGrid.value) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisible.value = true
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+    observer.observe(trustGrid.value)
+  }
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
+})
 </script>
 
 <style scoped>
@@ -151,6 +186,24 @@ const cities = [
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(30px);
+  animation-fill-mode: forwards;
+}
+
+.trust-item.animate-in {
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .trust-item:hover {

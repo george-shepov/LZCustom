@@ -35,12 +35,17 @@
       </div>
       
       <div class="gallery-grid">
-        <div 
-          class="gallery-item" 
-          v-for="(item, index) in galleryItems" 
+        <div
+          class="gallery-item"
+          v-for="(item, index) in galleryItems"
           :key="index"
           @click="openLightbox(index)"
           :class="{ 'featured': item.featured }"
+          :aria-label="`View ${item.title} - ${item.category} project details`"
+          role="button"
+          tabindex="0"
+          @keydown.enter="openLightbox(index)"
+          @keydown.space="openLightbox(index)"
         >
           <div class="image-container">
             <img :src="item.image" :alt="item.title" loading="lazy" />
@@ -481,9 +486,12 @@ onUnmounted(() => {
   max-width: 820px;
 }
 
-.gallery-item:hover {
+.gallery-item:hover,
+.gallery-item:focus {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  outline: 3px solid #f39c12;
+  outline-offset: 2px;
 }
 
 .image-container {
@@ -506,7 +514,8 @@ onUnmounted(() => {
   image-rendering: crisp-edges;
 }
 
-.gallery-item:hover .image-container img {
+.gallery-item:hover .image-container img,
+.gallery-item:focus .image-container img {
   transform: scale(1.1);
 }
 
@@ -524,7 +533,8 @@ onUnmounted(() => {
   transition: all 0.3s ease;
 }
 
-.gallery-item:hover .image-overlay {
+.gallery-item:hover .image-overlay,
+.gallery-item:focus .image-overlay {
   opacity: 1;
 }
 
@@ -535,7 +545,8 @@ onUnmounted(() => {
   transition: transform 0.3s ease;
 }
 
-.gallery-item:hover .overlay-content {
+.gallery-item:hover .overlay-content,
+.gallery-item:focus .overlay-content {
   transform: translateY(0);
 }
 
