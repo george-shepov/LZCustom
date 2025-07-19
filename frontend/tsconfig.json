@@ -41,6 +41,6 @@
   ],
   "vueCompilerOptions": {
     "target": 3,
-    "globalTypesPath": "./src/vue-shim.d.ts"
+    "globalTypesPath": "./node_modules/.vue-global-types/vue_3_0_0_0.d.ts"
   }
 }

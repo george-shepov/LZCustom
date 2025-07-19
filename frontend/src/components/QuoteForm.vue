@@ -175,7 +175,7 @@
                     </div>
                     <div class="form-group">
                       <label>Approximate Square Footage</label>
-                      <input type="number" v-model="form.squareFootage" placeholder="e.g., 45" />
+                      <input type="number" v-model="form.squareFootage" placeholder="e.g., 45" min="1" step="1" />
                     </div>
                   </div>
                 </div>
@@ -472,24 +472,47 @@ const submitForm = async () => {
   isSubmitting.value = true
 
   try {
+    // Prepare form data with proper type conversion
+    const formData = {
+      ...form.value,
+      squareFootage: form.value.squareFootage && form.value.squareFootage.trim() !== ''
+        ? parseInt(form.value.squareFootage)
+        : null
+    }
+
+    // Validate squareFootage if provided
+    if (form.value.squareFootage && form.value.squareFootage.trim() !== '' && isNaN(parseInt(form.value.squareFootage))) {
+      alert('Please enter a valid number for square footage.')
+      return
+    }
+
+    console.log('Submitting form data:', formData)
+
     const response = await fetch('/api/prospects', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(form.value)
+      body: JSON.stringify(formData)
     })
 
+    console.log('Response status:', response.status)
+
     if (response.ok) {
+      const result = await response.json()
+      console.log('Success response:', result)
       showSuccess.value = true
-      successMessage.value = businessStatus.value.class === 'open' 
+      successMessage.value = businessStatus.value.class === 'open'
         ? "We'll contact you within 2 hours to discuss your project!"
         : "We'll contact you first thing during our next business hours!"
     } else {
-      throw new Error('Failed to submit')
+      const errorData = await response.text()
+      console.error('Error response:', response.status, errorData)
+      throw new Error(`Server error: ${response.status}`)
     }
   } catch (error) {
-    alert('There was an error submitting your request. Please try again or call us directly at 216-268-2990.')
+    console.error('Form submission error:', error)
+    alert(`There was an error submitting your request: ${error.message}. Please try again or call us directly at 216-268-2990.`)
   } finally {
     isSubmitting.value = false
   }
