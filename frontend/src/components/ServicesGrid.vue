@@ -212,30 +212,33 @@ const playHoverSound = () => {
 }
 
 .section-title {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
   color: #2c3e50;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
 .section-title::after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
+  width: 100px;
   height: 4px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
   border-radius: 2px;
 }
 
 .section-subtitle {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  max-width: 600px;
-  margin: 0 auto;
+  font-size: 1.25rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto 3rem auto;
   line-height: 1.6;
+  font-weight: 400;
 }
 
 .services-category {
@@ -243,11 +246,11 @@ const playHoverSound = () => {
 }
 
 .category-title {
-  font-size: 1.8rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: #2c3e50;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   position: relative;
 }
 
@@ -279,8 +282,8 @@ const playHoverSound = () => {
 
 .service-card {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  padding: 2rem;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -288,7 +291,7 @@ const playHoverSound = () => {
   cursor: pointer;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .service-card.primary {
