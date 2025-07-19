@@ -1,0 +1,195 @@
+version: '3.8'
+
+# VPS Dime Tier 4 (8GB RAM) - Professional with Dual AI
+# Features: PostgreSQL, Redis, Dual AI models, Analytics
+# Price: $25-35/month - RECOMMENDED TIER
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: lzcustom
+      POSTGRES_USER: lzuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lzpassword123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lzuser -d lzcustom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    mem_limit: 512m
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=5m
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    mem_limit: 6g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  model-loader:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    command: >
+      sh -c "
+        ollama pull llama3.2:3b &&
+        ollama pull gemma3:4b &&
+        echo 'Models loaded successfully for Tier 4'
+      "
+    restart: "no"
+
+  backend:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.backend
+    environment:
+      - VPS_TIER=tier4
+      - DATABASE_URL=postgresql://lzuser:${DB_PASSWORD:-lzpassword123}@postgres:5432/lzcustom
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_HOST=http://ollama:11434
+      - ENABLE_ANALYTICS=true
+      - ENABLE_MONITORING=true
+      - AI_MODELS=llama3.2:3b,gemma3:4b
+      - VPS_DIME_REFERRAL_CODE=${REFERRAL_CODE:-lzcustom}
+    volumes:
+      - ../backend:/app
+      - tier4_logs:/app/logs
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - VPS_TIER=tier4
+      - API_URL=http://backend:8000
+      - ENABLE_ANALYTICS=true
+    volumes:
+      - ./nginx/tier4.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl:/etc/nginx/ssl
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    mem_limit: 512m
+
+  # Analytics and monitoring (Tier 4 feature)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    restart: unless-stopped
+    mem_limit: 512m
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    restart: unless-stopped
+    mem_limit: 512m
+
+  # Backup service for data protection
+  backup:
+    image: postgres:15-alpine
+    environment:
+      - PGPASSWORD=${DB_PASSWORD:-lzpassword123}
+    volumes:
+      - ./backups:/backups
+      - backup_scripts:/scripts
+    command: >
+      sh -c "
+        while true; do
+          sleep 86400  # 24 hours
+          pg_dump -h postgres -U lzuser -d lzcustom > /backups/backup_$(date +%Y%m%d_%H%M%S).sql
+          find /backups -name '*.sql' -mtime +7 -delete
+        done
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+  tier4_logs:
+  prometheus_data:
+  grafana_data:
+  backup_scripts:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
