@@ -50,7 +50,7 @@
           </div>
 
           <div class="contact-info">
-            <a href="tel:216-268-2990" class="phone-number">
+            <a href="tel:216-268-2990" class="phone-call">
               <i class="fas fa-phone"></i>
               216-268-2990
             </a>
@@ -200,7 +200,7 @@ const scrollToGallery = () => {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
+  padding: 5rem 2rem;
 }
 
 .hero-text {
@@ -211,11 +211,81 @@ const scrollToGallery = () => {
 
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(3.5rem, 8vw, 6rem);
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  margin-bottom: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.title-main {
+  display: inline;
+  margin-right: 0.3em;
+}
+
+.title-accent {
+  display: inline;
+  color: #f39c12;
+}
+
+.hero-tagline {
+  margin-bottom: 3rem;
+}
+
+.tagline-main {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.tagline-sub {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 0;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.contact-info {
+  text-align: center;
+}
+
+.phone-call {
+  color: white;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  transition: all 0.3s ease;
+}
+
+.phone-call:hover,
+.phone-call:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+  color: white;
+  text-decoration: none;
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
 }
 
 .hero-subtitle {
@@ -317,12 +387,23 @@ const scrollToGallery = () => {
   }
   
   .hero-content {
-    padding: 1rem;
+    padding: 3rem 1rem;
   }
-  
-  .hero-cta {
+
+  .cta-buttons {
     flex-direction: column;
     align-items: center;
+    gap: 0.75rem;
+  }
+
+  .cta-buttons button {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .phone-call {
+    font-size: 1rem;
+    padding: 0.625rem 1.25rem;
   }
   
   .btn-primary, .btn-secondary {
