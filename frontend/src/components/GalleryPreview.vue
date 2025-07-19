@@ -62,6 +62,9 @@
           <div class="item-info">
             <span class="category-tag">{{ item.category }}</span>
             <h4>{{ item.title }}</h4>
+            <div class="item-description" v-if="item.description">
+              <p>{{ item.description }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -209,55 +212,64 @@ const galleryItems = [
     image: '/assets/gallery/projects/kitchen-granite-hd.png',
     title: 'Custom Kitchen Countertops',
     category: 'Granite & Stone',
-    featured: true
+    featured: true,
+    description: 'Experience the timeless beauty and durability of natural granite countertops. Each slab tells a unique geological story, formed over millions of years with distinctive patterns and mineral compositions. Our expert fabricators carefully select premium granite slabs, ensuring perfect color matching and structural integrity. The natural stone\'s heat resistance and scratch-resistant properties make it ideal for busy kitchens, while its polished surface creates stunning light reflections that enhance any space.'
   },
   {
     image: '/assets/gallery/projects/custom-cabinets-hd.png',
     title: 'Handcrafted Oak Cabinets',
     category: 'Custom Cabinets',
-    featured: true
+    featured: true,
+    description: 'Discover the warmth and character of solid oak cabinetry, where traditional craftsmanship meets modern functionality. Oak\'s distinctive grain patterns and natural strength make it a premier choice for custom millwork. Our skilled artisans hand-select each board for optimal grain flow and color consistency, creating seamless cabinet faces that showcase the wood\'s inherent beauty. The natural tannins in oak provide excellent durability and aging characteristics, developing a richer patina over time.'
   },
   {
     image: '/assets/gallery/projects/bathroom-marble-hd.png',
     title: 'Marble Bathroom Vanity',
     category: 'Stone Fabrication',
-    featured: false
+    featured: false,
+    description: 'Indulge in the luxurious elegance of natural marble, where each vein tells a story of ancient geological processes. This metamorphic stone offers unparalleled beauty with its flowing patterns and subtle color variations. Our master stone fabricators understand marble\'s unique properties, carefully templating and cutting each piece to highlight the stone\'s natural movement. The cool surface temperature and smooth texture create a spa-like atmosphere in any bathroom setting.'
   },
   {
     image: '/assets/gallery/u6358423361_Modern_commercial_office_space_with_durable_lamin_6e25e604-46fe-49e7-816f-423717499296_0.png',
     title: 'Commercial Laminate Installation',
     category: 'Commercial Projects',
-    featured: false
+    featured: false,
+    description: 'Modern laminate surfaces combine innovative technology with practical design solutions for high-traffic commercial environments. These engineered surfaces feature advanced wear layers that resist scratches, stains, and daily abuse while maintaining their appearance. The structural core provides dimensional stability across temperature variations, while the decorative layer offers endless design possibilities from wood grains to contemporary patterns. Perfect for offices, retail spaces, and hospitality environments requiring both durability and aesthetic appeal.'
   },
   {
     image: '/assets/gallery/u6358423361_Intricate_geometric_tile_pattern_flooring_expert__bec8e5ac-8a9c-4831-8c48-d865023de519_0.png',
     title: 'Geometric Tile Flooring',
     category: 'Tile & Flooring',
-    featured: false
+    featured: false,
+    description: 'Geometric tile patterns create dynamic visual interest through precise mathematical arrangements and color relationships. These ceramic and porcelain tiles showcase advanced manufacturing techniques that ensure consistent dimensions and color matching. The intricate patterns require expert installation skills to maintain perfect alignment and spacing. Each tile\'s fired ceramic body provides excellent durability and water resistance, while the glazed surface offers easy maintenance and long-lasting beauty in both residential and commercial applications.'
   },
   {
     image: '/assets/gallery/u6358423361_Professional_commercial_interior_painting_premium_fe294b7e-0227-404b-bed4-28fc32e6bb35_0.png',
     title: 'Professional Interior Painting',
     category: 'Commercial Painting',
-    featured: false
+    featured: false,
+    description: 'Professional commercial painting transforms spaces through expert color selection, surface preparation, and application techniques. Our skilled painters understand how different paint formulations interact with various substrates, ensuring optimal adhesion and longevity. Premium commercial-grade paints offer superior coverage, durability, and washability for high-traffic areas. The careful preparation process includes proper priming, surface repairs, and protection of adjacent surfaces, resulting in smooth, uniform finishes that enhance the architectural features of any commercial space.'
   },
   {
     image: '/assets/gallery/projects/granite-samples.jpg',
     title: 'Stone Sample Collection',
     category: 'Materials',
-    featured: false
+    featured: false,
+    description: 'Our comprehensive stone sample collection showcases the incredible diversity of natural stone materials available for your project. Each sample represents unique geological formations from quarries worldwide, displaying distinct mineral compositions, color variations, and structural characteristics. From the deep blacks of absolute granite to the warm golds of travertine, these samples help you visualize how different stones will complement your design vision while understanding their practical properties for specific applications.'
   },
   {
     image: '/assets/gallery/projects/wood-samples.jpg',
     title: 'Wood Species Showcase',
     category: 'Materials',
-    featured: false
+    featured: false,
+    description: 'Explore the natural beauty and unique characteristics of premium hardwood species in our curated sample collection. Each wood species offers distinct grain patterns, color tones, and working properties that influence both aesthetics and functionality. From the tight, consistent grain of hard maple to the dramatic cathedral patterns of red oak, these samples demonstrate how different species respond to staining and finishing processes. Understanding wood movement, density, and durability helps ensure the perfect match for your custom millwork project.'
   },
   {
     image: '/assets/gallery/projects/engineered-stone.jpg',
     title: 'Engineered Quartz Surfaces',
     category: 'Materials',
-    featured: false
+    featured: false,
+    description: 'Engineered quartz represents the perfect fusion of natural beauty and modern technology, combining crushed quartz crystals with advanced polymer resins. This manufacturing process creates surfaces that are more consistent and durable than natural stone while offering unlimited design possibilities. The non-porous surface resists stains, bacteria, and scratches without requiring sealing. Available in colors and patterns impossible to find in nature, engineered quartz provides the luxury appearance of natural stone with enhanced performance characteristics ideal for contemporary living.'
   }
 ]
 
@@ -637,6 +649,21 @@ onUnmounted(() => {
   color: #2c3e50;
   font-size: 1.1rem;
   font-family: 'Cormorant Garamond', serif;
+}
+
+.item-description {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ecf0f1;
+}
+
+.item-description p {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+  text-align: justify;
+  hyphens: auto;
 }
 
 .gallery-cta {

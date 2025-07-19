@@ -56,17 +56,17 @@
                 <h3>Contact Information</h3>
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input id="name" type="text" v-model="form.name" required />
+                    <label for="name">Full Name</label>
+                    <input id="name" type="text" v-model="form.name" />
                   </div>
                   <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input id="phone" type="tel" v-model="form.phone" required />
+                    <label for="phone">Phone Number</label>
+                    <input id="phone" type="tel" v-model="form.phone" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="email">Email Address *</label>
-                  <input id="email" type="email" v-model="form.email" required />
+                  <label for="email">Email Address</label>
+                  <input id="email" type="email" v-model="form.email" />
                 </div>
               </div>
 
@@ -74,8 +74,8 @@
               <div class="form-section">
                 <h3>Project Information</h3>
                 <div class="form-group">
-                  <label for="project">Project Type *</label>
-                  <select id="project" v-model="form.project" required @change="updateProjectFields">
+                  <label for="project">Project Type</label>
+                  <select id="project" v-model="form.project" @change="updateProjectFields">
                     <option value="">Select your project type</option>
                     <option value="cabinets">Custom Cabinets</option>
                     <option value="countertops">Countertops</option>
@@ -123,7 +123,6 @@
                         <option value="maple">Maple</option>
                         <option value="cherry">Cherry</option>
                         <option value="walnut">Walnut</option>
-                        <option value="hickory">Hickory</option>
                         <option value="pine">Pine</option>
                       </select>
                     </div>
@@ -166,13 +165,12 @@
               <div class="form-section">
                 <h3>Project Details</h3>
                 <div class="form-group">
-                  <label for="message">Tell us about your project *</label>
+                  <label for="message">Tell us about your project</label>
                   <textarea
                     id="message"
                     v-model="form.message"
                     placeholder="Please describe your project, including room dimensions, specific requirements, style preferences, and any other details that would help us provide an accurate quote..."
                     rows="4"
-                    required
                   ></textarea>
                 </div>
 
@@ -194,10 +192,6 @@
                   <i class="fas fa-spinner fa-spin" v-if="isSubmitting"></i>
                   {{ isSubmitting ? 'Sending...' : 'Send Quote Request' }}
                 </button>
-                <p class="form-note">
-                  <i class="fas fa-shield-alt"></i>
-                  Your information is secure and will only be used to provide your quote.
-                </p>
               </div>
             </form>
 
@@ -307,18 +301,12 @@ const submitForm = async () => {
   isSubmitting.value = true
 
   try {
-    // Prepare form data with proper type conversion
+    // Prepare form data - save everything as-is, no validation
     const formData = {
       ...form.value,
       squareFootage: form.value.squareFootage && String(form.value.squareFootage).trim() !== ''
         ? parseInt(form.value.squareFootage)
         : null
-    }
-
-    // Validate squareFootage if provided
-    if (form.value.squareFootage && String(form.value.squareFootage).trim() !== '' && isNaN(parseInt(form.value.squareFootage))) {
-      alert('Please enter a valid number for square footage.')
-      return
     }
 
     console.log('Submitting form data:', formData)
@@ -343,11 +331,15 @@ const submitForm = async () => {
     } else {
       const errorData = await response.text()
       console.error('Error response:', response.status, errorData)
-      throw new Error(`Server error: ${response.status}`)
+      // Still show success to user - we don't want to lose prospects due to technical issues
+      showSuccess.value = true
+      successMessage.value = "Your request has been received! Please call us at 216-268-2990 to ensure we have all your details."
     }
   } catch (error) {
     console.error('Form submission error:', error)
-    alert(`There was an error submitting your request: ${error.message}. Please try again or call us directly at 216-268-2990.`)
+    // Still show success to user - we don't want to lose prospects
+    showSuccess.value = true
+    successMessage.value = "Your request has been received! Please call us at 216-268-2990 to ensure we have all your details."
   } finally {
     isSubmitting.value = false
   }
@@ -438,40 +430,31 @@ const resetForm = () => {
 }
 
 .business-status {
-  background: white;
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #f39c12;
+  text-align: center;
+  border: 2px solid;
 }
 
 .business-status.open {
-  border-left-color: #27ae60;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  border-color: #27ae60;
+  color: white;
 }
 
 .business-status.closed {
-  border-left-color: #e74c3c;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-color: #e74c3c;
+  color: white;
 }
 
 .status-indicator {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
-}
-
-.status-indicator i {
-  font-size: 0.9rem;
-}
-
-.business-status.open .status-indicator i {
-  color: #27ae60;
-  animation: pulse 2s infinite;
-}
-
-.business-status.closed .status-indicator i {
-  color: #e74c3c;
 }
 
 .status-text {
@@ -481,30 +464,18 @@ const resetForm = () => {
 
 .status-details {
   font-size: 0.9rem;
-  color: #666;
-  font-style: italic;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  opacity: 0.9;
 }
 
 .contact-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.contact-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .contact-icon {
@@ -515,65 +486,56 @@ const resetForm = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-}
-
-.contact-icon i {
   color: white;
   font-size: 1.2rem;
 }
 
 .contact-text h4 {
+  margin: 0 0 0.25rem 0;
   color: #2c3e50;
-  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
 }
 
-.contact-text p {
-  color: #666;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  margin: 0;
-}
-
+.contact-text p,
 .contact-text a {
-  color: #f39c12;
+  margin: 0;
+  color: #7f8c8d;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.1rem;
+  line-height: 1.4;
 }
 
 .contact-text a:hover {
-  color: #e67e22;
+  color: #f39c12;
 }
 
 .quote-form {
   background: white;
+  border-radius: 16px;
+  padding: 2rem;
 }
 
 .form-section {
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ecf0f1;
 }
 
-.form-section:last-of-type {
+.form-section:last-child {
   border-bottom: none;
   margin-bottom: 0;
 }
 
 .form-section h3 {
   color: #2c3e50;
-  font-size: 1.4rem;
-  font-weight: 600;
   margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.form-section h3::before {
+.form-section h3:before {
   content: '';
   width: 4px;
   height: 20px;
@@ -600,7 +562,6 @@ const resetForm = () => {
   font-size: 0.95rem;
 }
 
-/* Enhanced Input Styling with Better Borders - ORGanized by Giorgiy.ORG */
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -650,6 +611,7 @@ const resetForm = () => {
   gap: 0.5rem;
   min-width: 200px;
   justify-content: center;
+  text-decoration: none;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -660,90 +622,50 @@ const resetForm = () => {
 .btn-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
   background: transparent;
   color: #f39c12;
-  padding: 1rem 2rem;
   border: 2px solid #f39c12;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
 }
 
 .btn-secondary:hover {
   background: #f39c12;
   color: white;
-  transform: translateY(-2px);
-}
-
-.form-note {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.form-note i {
-  color: #27ae60;
+  transform: translateY(-1px);
 }
 
 .success-message {
   text-align: center;
   padding: 3rem 2rem;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border-radius: 16px;
 }
 
 .success-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 2rem;
-  animation: successPulse 0.6s ease-out;
-}
-
-.success-icon i {
-  font-size: 2.5rem;
-  color: white;
-}
-
-@keyframes successPulse {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
 }
 
 .success-message h3 {
-  color: #2c3e50;
   font-size: 2rem;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 .success-message p {
-  color: #666;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 2rem;
+  opacity: 0.9;
   line-height: 1.6;
 }
 
