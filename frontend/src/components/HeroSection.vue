@@ -6,11 +6,9 @@
 
     <div class="hero-content">
       <div class="container">
-        <div class="hero-text">
+        <div class="hero-text hero-fade" :class="{ 'visible': isVisible }">
           <h1 class="hero-title">
-            <span class="brand-dominant">LZ</span>
-            <span class="brand-light">Custom</span>
-            <span class="brand-bold">Fabrication</span>
+            <span class="lz">LZ</span> <span class="custom">Custom</span> <span class="fab">Fabrication</span>
           </h1>
 
           <div class="hero-tagline">
@@ -50,20 +48,22 @@
             </button>
           </div>
 
-          <div class="contact-info">
-            <a href="tel:216-268-2990" class="phone-call">
-              <i class="fas fa-phone"></i>
-              216-268-2990
-            </a>
-          </div>
+
         </div>
       </div>
     </div>
+
+    <!-- Mobile-only Phone FAB -->
+    <a href="tel:216-268-2990" class="phone-fab">
+      <i class="fas fa-phone"></i>
+    </a>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+
+const isVisible = ref(false)
 
 const currentHeroIndex = ref(0)
 const screenWidth = ref(window.innerWidth)
@@ -122,6 +122,11 @@ onMounted(() => {
   setInterval(() => {
     currentHeroIndex.value = (currentHeroIndex.value + 1) % currentImageSet.value.length
   }, 6000)
+
+  // Trigger entrance animation
+  setTimeout(() => {
+    isVisible.value = true
+  }, 300)
 })
 
 const scrollToForm = () => {
@@ -142,7 +147,8 @@ const scrollToGallery = () => {
   min-height: 600px;
   overflow: hidden;
   width: 100%;
-  padding-top: 80px;
+  padding-top: 120px;
+  padding-bottom: 100px;
 }
 
 .hero-background {
@@ -212,43 +218,32 @@ const scrollToGallery = () => {
 
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(3.5rem, 8vw, 6rem);
-  font-weight: 700;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-align: center;
   line-height: 1.1;
   margin-bottom: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: -0.02em;
 }
 
-.brand-dominant {
-  font-size: 1.4em;
-  font-weight: 900;
+.lz {
   color: #f39c12;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-  margin-right: 0.2em;
-  display: inline-block;
-  transform: scale(1.1);
+  font-weight: 900;
 }
 
-.brand-light {
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.9);
-  margin-right: 0.3em;
-  display: inline;
-}
-
-.brand-bold {
-  font-weight: 700;
-  color: white;
-  display: inline;
+.custom, .fab {
+  color: #fff;
+  font-weight: 600;
 }
 
 .hero-tagline {
+  margin-top: 1.5rem;
   margin-bottom: 3rem;
 }
 
 .tagline-main {
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   font-weight: 500;
   line-height: 1.6;
   margin-bottom: 1rem;
@@ -273,33 +268,41 @@ const scrollToGallery = () => {
   justify-content: center;
 }
 
-.contact-info {
-  text-align: center;
-}
-
-.phone-call {
-  color: white;
+.phone-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
   background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1.1rem;
-  display: inline-flex;
+  color: white;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: none;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  font-size: 1.25rem;
   text-decoration: none;
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+  z-index: 1000;
   transition: all 0.3s ease;
 }
 
-.phone-call:hover,
-.phone-call:focus {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+.phone-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.5);
   color: white;
   text-decoration: none;
-  outline: 2px solid rgba(255, 255, 255, 0.3);
-  outline-offset: 2px;
+}
+
+.hero-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.hero-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-subtitle {
@@ -415,9 +418,8 @@ const scrollToGallery = () => {
     max-width: 280px;
   }
 
-  .phone-call {
-    font-size: 1rem;
-    padding: 0.625rem 1.25rem;
+  .phone-fab {
+    display: flex;
   }
   
   .btn-primary, .btn-secondary {
