@@ -8,8 +8,9 @@
       <div class="container">
         <div class="hero-text hero-fade" :class="{ 'visible': isVisible }">
           <h1 class="hero-title">
-            <span class="lz">LZ</span> <span class="custom">Custom</span> <span class="fab">Fabrication</span>
+            <span class="lz">LZ</span> <span class="custom">Custom</span>
           </h1>
+          <p class="hero-subtitle">Premium Fabrication</p>
 
           <div class="hero-tagline">
             <p class="tagline-main">Luxury Custom Cabinets | Premium Countertops | Master Stone Fabrication</p>
@@ -218,23 +219,36 @@ const scrollToGallery = () => {
 
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 800;
   letter-spacing: -0.5px;
   text-align: center;
   line-height: 1.1;
-  margin-bottom: 2rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0.5rem;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 .lz {
   color: #f39c12;
   font-weight: 900;
+  font-size: 1.2em;
+  margin-right: 0.2em;
 }
 
-.custom, .fab {
+.custom {
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .hero-tagline {
