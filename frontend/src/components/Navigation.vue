@@ -2,8 +2,11 @@
   <nav class="navigation" :class="{ 'scrolled': isScrolled }">
     <div class="nav-container">
       <div class="nav-logo">
-        <h1>LZ Custom</h1>
-        <span>Fabrication</span>
+        <h1>
+          <span class="logo-lz">LZ</span>
+          <span class="logo-custom">Custom</span>
+        </h1>
+        <span class="logo-fabrication">Fabrication</span>
       </div>
 
       <div class="nav-links" :class="{ 'active': mobileMenuOpen }">
@@ -95,9 +98,23 @@ onUnmounted(() => {
   color: #2c3e50;
   margin: 0;
   font-family: 'Playfair Display', serif;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
 }
 
-.nav-logo span {
+.logo-lz {
+  font-size: 1.3em;
+  font-weight: 900;
+  color: #f39c12;
+}
+
+.logo-custom {
+  font-weight: 400;
+  color: #2c3e50;
+}
+
+.logo-fabrication {
   font-size: 0.9rem;
   color: #f39c12;
   font-weight: 500;

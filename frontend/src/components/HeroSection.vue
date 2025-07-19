@@ -8,8 +8,9 @@
       <div class="container">
         <div class="hero-text">
           <h1 class="hero-title">
-            <span class="title-main">LZ Custom</span>
-            <span class="title-accent">Fabrication</span>
+            <span class="brand-dominant">LZ</span>
+            <span class="brand-light">Custom</span>
+            <span class="brand-bold">Fabrication</span>
           </h1>
 
           <div class="hero-tagline">
@@ -219,14 +220,27 @@ const scrollToGallery = () => {
   letter-spacing: -0.02em;
 }
 
-.title-main {
-  display: inline;
-  margin-right: 0.3em;
+.brand-dominant {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: #f39c12;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+  margin-right: 0.2em;
+  display: inline-block;
+  transform: scale(1.1);
 }
 
-.title-accent {
+.brand-light {
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  margin-right: 0.3em;
   display: inline;
-  color: #f39c12;
+}
+
+.brand-bold {
+  font-weight: 700;
+  color: white;
+  display: inline;
 }
 
 .hero-tagline {
