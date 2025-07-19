@@ -133,7 +133,22 @@ const scrollToForm = () => {
 }
 
 const scrollToGallery = () => {
-  document.querySelector('#gallery-preview')?.scrollIntoView({ behavior: 'smooth' })
+  // Show helpful tip before scrolling
+  const shouldScroll = confirm(`🎯 About to view our portfolio!
+
+You'll see examples of:
+• Custom kitchen cabinets in various wood species
+• Granite, marble, and quartz countertop installations
+• Stone fabrication projects and architectural elements
+• Before/after transformations from real clients
+
+💡 Tip: Click any image to see full-size details and project information.
+
+Ready to explore our work?`)
+
+  if (shouldScroll) {
+    document.querySelector('#gallery-preview')?.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 </script>
 

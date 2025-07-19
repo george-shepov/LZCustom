@@ -107,10 +107,20 @@
         <button @click="scrollToForm" class="btn-primary">Start with a Free Custom Estimate Today</button>
       </div>
     </div>
+
+    <!-- Helpful Modal -->
+    <HelpfulModal
+      :isOpen="showModal"
+      :modalData="currentModalData"
+      @close="closeModal"
+    />
   </section>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import HelpfulModal from './HelpfulModal.vue'
+
 // Primary Services - Core offerings
 const primaryServices = [
   {
@@ -178,10 +188,104 @@ const scrollToForm = () => {
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
+const showModal = ref(false)
+const currentModalData = ref({})
+
 const openServiceModal = (service) => {
-  // This would open a modal with more details about the service
-  console.log('Opening modal for:', service.title)
-  alert(`Learn more about ${service.title} - Feature coming soon!`)
+  currentModalData.value = getServiceModalData(service)
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const getServiceModalData = (service) => {
+  const modalData = {
+    'Custom Cabinets': {
+      icon: 'fas fa-hammer',
+      title: 'Custom Cabinet Fabrication',
+      image: '/images/custom-cabinets-hero.jpg',
+      content: [
+        'Transform your kitchen or bathroom with handcrafted custom cabinets built to your exact specifications. Our master craftsmen use premium hardwoods and time-tested techniques to create cabinets that will last generations.',
+        'Every cabinet is designed and built in our Northeast Ohio workshop, ensuring the highest quality control and attention to detail. We work with you from initial design through final installation.'
+      ],
+      tips: [
+        'Measure your space carefully - we provide free in-home consultations',
+        'Consider your storage needs and daily workflow when planning',
+        'Choose wood species that complement your home\'s style',
+        'Plan for proper lighting inside cabinets for functionality'
+      ],
+      features: [
+        { icon: 'fas fa-tree', name: 'Premium Hardwoods' },
+        { icon: 'fas fa-ruler-combined', name: 'Custom Sizing' },
+        { icon: 'fas fa-palette', name: 'Custom Finishes' },
+        { icon: 'fas fa-tools', name: 'Expert Installation' }
+      ],
+      pricing: {
+        range: '$15,000 - $50,000+',
+        note: 'Pricing varies by size, wood species, and complexity. Free estimates available.'
+      }
+    },
+    'Premium Countertops': {
+      icon: 'fas fa-gem',
+      title: 'Premium Countertop Installation',
+      image: '/images/countertops-hero.jpg',
+      content: [
+        'Elevate your kitchen or bathroom with stunning natural stone or engineered countertops. We specialize in granite, marble, quartz, and exotic stone materials that combine beauty with durability.',
+        'Our precision fabrication and expert installation ensure perfect fit and finish. Each countertop is templated, cut, and polished in our state-of-the-art facility.'
+      ],
+      tips: [
+        'Consider maintenance requirements - quartz needs less care than natural stone',
+        'Think about edge profiles that complement your cabinet style',
+        'Plan for proper support, especially with overhangs',
+        'Choose colors that won\'t date your kitchen design'
+      ],
+      features: [
+        { icon: 'fas fa-mountain', name: 'Natural Stone' },
+        { icon: 'fas fa-shield-alt', name: 'Stain Resistant' },
+        { icon: 'fas fa-fire', name: 'Heat Resistant' },
+        { icon: 'fas fa-cut', name: 'Precision Cut' }
+      ],
+      pricing: {
+        range: '$3,000 - $15,000',
+        note: 'Includes templating, fabrication, and installation. Material costs vary.'
+      }
+    },
+    'Stone Fabrication': {
+      icon: 'fas fa-mountain',
+      title: 'Master Stone Fabrication',
+      image: '/images/stone-fabrication.jpg',
+      content: [
+        'Our master stone fabricators create custom architectural elements, fireplace surrounds, outdoor kitchens, and specialty installations. We work with granite, marble, limestone, and exotic stones.',
+        'From concept to completion, we handle every aspect of your stone project with precision and artistry. Our team has over 30 years of experience in complex stone fabrication.'
+      ],
+      tips: [
+        'Consider the environment - outdoor stones need different properties',
+        'Plan for proper drainage and support structures',
+        'Choose finishes appropriate for the application',
+        'Factor in maintenance and sealing requirements'
+      ],
+      features: [
+        { icon: 'fas fa-drafting-compass', name: 'Custom Design' },
+        { icon: 'fas fa-industry', name: 'CNC Precision' },
+        { icon: 'fas fa-home', name: 'Indoor/Outdoor' },
+        { icon: 'fas fa-certificate', name: '30+ Years Experience' }
+      ],
+      pricing: {
+        range: '$2,000 - $20,000',
+        note: 'Highly variable based on complexity and materials. Consultation required.'
+      }
+    }
+  }
+
+  return modalData[service.title] || {
+    icon: service.icon,
+    title: service.title,
+    content: [service.description],
+    tips: ['Contact us for more information about this service'],
+    pricing: { range: 'Contact for pricing', note: 'Free estimates available' }
+  }
 }
 
 const playHoverSound = () => {

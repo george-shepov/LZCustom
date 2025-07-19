@@ -68,7 +68,7 @@
       
       <div class="gallery-cta">
         <button @click="openCarousel(0)" class="btn-primary">View Full Portfolio</button>
-        <button @click="scrollToForm" class="btn-secondary">Request Quote</button>
+        <button @click="openPortfolioTips" class="btn-secondary">Planning Tips</button>
       </div>
     </div>
     
@@ -305,6 +305,32 @@ const previousImage = () => {
 const scrollToForm = () => {
   const el = document.querySelector('#quote-form')
   if (el) el.scrollIntoView({ behavior: 'smooth' })
+}
+
+const openPortfolioTips = () => {
+  alert(`💡 Planning Your Project - Helpful Tips:
+
+🏠 Kitchen Projects:
+• Measure your space carefully - include appliances
+• Consider workflow: sink, stove, refrigerator triangle
+• Plan for adequate lighting and electrical outlets
+• Think about storage needs and daily usage patterns
+
+🛁 Bathroom Projects:
+• Account for plumbing locations and constraints
+• Consider moisture resistance for all materials
+• Plan for proper ventilation and lighting
+• Think about accessibility and safety features
+
+📏 General Tips:
+• Take photos of your current space from multiple angles
+• Note any structural limitations or challenges
+• Consider your budget for materials vs. labor
+• Plan for 10-15% contingency in your budget
+
+📞 Ready to start? Call us at 216-268-2990 for a free consultation!
+
+We'll help you plan every detail for a successful project.`)
 }
 
 // Handle keyboard navigation

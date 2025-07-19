@@ -79,13 +79,13 @@
           </div>
           
           <div class="social-links">
-            <a href="#" class="social-link" aria-label="Facebook">
+            <a @click="showFacebookInfo" class="social-link" aria-label="Facebook">
               <i class="fab fa-facebook-f"></i>
             </a>
-            <a href="#" class="social-link" aria-label="Instagram">
+            <a @click="showInstagramInfo" class="social-link" aria-label="Instagram">
               <i class="fab fa-instagram"></i>
             </a>
-            <a href="#" class="social-link" aria-label="LinkedIn">
+            <a @click="showLinkedInInfo" class="social-link" aria-label="LinkedIn">
               <i class="fab fa-linkedin-in"></i>
             </a>
           </div>
@@ -114,6 +114,51 @@ const currentYear = computed(() => new Date().getFullYear())
 const scrollToForm = () => {
   const el = document.querySelector('#quote-form')
   if (el) el.scrollIntoView({ behavior: 'smooth' })
+}
+
+const showFacebookInfo = () => {
+  alert(`📘 Connect with LZ Custom on Facebook!
+
+🏠 What you'll find:
+• Before/after project photos
+• Customer testimonials and reviews
+• Behind-the-scenes workshop videos
+• Design inspiration and trends
+• Special promotions and updates
+
+💡 Pro tip: Follow us to see our latest work and get design ideas for your own project!
+
+📞 Ready to start your project? Call 216-268-2990 for a free consultation!`)
+}
+
+const showInstagramInfo = () => {
+  alert(`📸 Follow LZ Custom on Instagram!
+
+✨ What you'll see:
+• Stunning project photography
+• Time-lapse fabrication videos
+• Material close-ups and textures
+• Design process behind-the-scenes
+• Customer feature stories
+
+💡 Pro tip: Tag us in your project photos for a chance to be featured!
+
+📞 Ready to create something beautiful? Call 216-268-2990!`)
+}
+
+const showLinkedInInfo = () => {
+  alert(`💼 Connect with LZ Custom on LinkedIn!
+
+🏢 Professional content:
+• Industry insights and trends
+• Company news and updates
+• Team member spotlights
+• Commercial project showcases
+• Business partnership opportunities
+
+💡 Perfect for contractors, designers, and commercial clients!
+
+📞 Interested in partnering? Call 216-268-2990 to discuss opportunities!`)
 }
 </script>
 
