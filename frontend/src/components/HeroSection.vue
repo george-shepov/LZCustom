@@ -10,25 +10,23 @@
           <h1 class="hero-title">
             <span class="lz">LZ</span> <span class="custom">Custom</span>
           </h1>
-          <p class="hero-subtitle">Premium Fabrication</p>
 
           <div class="hero-tagline">
-            <p class="tagline-main">Luxury Custom Cabinets | Premium Countertops | Master Stone Fabrication</p>
-            <p class="tagline-sub">Serving Northeast Ohio's Finest Homes for Over 30 Years</p>
+            <p class="tagline-main">Custom Cabinets & Stone Fabrication</p>
+            <p class="tagline-sub">30+ Years Serving Northeast Ohio</p>
           </div>
 
           <div class="hero-highlights">
             <div class="highlight-item">
-              <span class="highlight-number">30+</span>
-              <span class="highlight-text">Years Excellence</span>
+              <span class="highlight-text">Licensed & Insured</span>
             </div>
             <div class="highlight-divider">•</div>
             <div class="highlight-item">
-              <span class="highlight-text">In-House Craftsmanship</span>
+              <span class="highlight-text">Free Estimates</span>
             </div>
             <div class="highlight-divider">•</div>
             <div class="highlight-item">
-              <span class="highlight-text">Premium Materials</span>
+              <span class="highlight-text">Expert Craftsmanship</span>
             </div>
           </div>
 
