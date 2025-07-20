@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# LZ Custom - Quick Ultra-Light Deployment (850MB+ RAM)
-# One-command deployment for very low-resource VMs
+# LZ Custom - Auto Ultra-Light Deployment (850MB+ RAM)
+# Automatic deployment for very low-resource VMs - NO USER PROMPTS
 
 set -e
 
-echo "🪶 LZ Custom - Ultra-Light Deployment (850MB+ RAM)"
-echo "================================================="
+echo "🪶 LZ Custom - Auto Ultra-Light Deployment (850MB+ RAM)"
+echo "======================================================"
 echo ""
-echo "This deployment works with your 898MB RAM VM:"
+echo "🚀 AUTOMATIC DEPLOYMENT STARTING..."
+echo "This deployment works with your RAM and will:"
 echo "  ✅ Smart package detection (only installs what's needed)"
 echo "  ✅ NO AI models (saves 10GB+ storage and RAM)"
 echo "  ✅ SQLite database (no external database)"
@@ -59,7 +60,7 @@ if ! sudo -n true 2>/dev/null; then
 fi
 
 # Ultra-light system requirements check
-print_status "Checking your system (898MB RAM detected)..."
+print_status "Checking your system..."
 
 # Check RAM - adjusted for your specific case
 TOTAL_RAM=$(free -m | awk 'NR==2{printf "%.0f", $2}')
@@ -127,10 +128,9 @@ if [ -n "$NEED_TO_INSTALL" ]; then
     print_warning "Will install:$NEED_TO_INSTALL"
 fi
 
-# Confirm deployment
+# Show deployment plan
 echo ""
-print_warning "⚠️  ULTRA-LIGHT DEPLOYMENT CONFIRMATION"
-echo "This will install and configure:"
+print_ultra "🚀 DEPLOYMENT PLAN FOR ${TOTAL_RAM}MB RAM VM:"
 echo "  • Only missing packages (smart detection applied)"
 echo "  • LZ Custom website with admin dashboard"
 echo "  • Simple chat responses (NO AI models)"
@@ -142,20 +142,17 @@ echo "Estimated time: 8-12 minutes"
 echo "Estimated download: ~200-500MB (depending on what's already installed)"
 echo "Memory usage after deployment: ~400-500MB (leaves ${TOTAL_RAM}MB - 500MB = $((TOTAL_RAM - 500))MB+ free)"
 echo ""
-echo "Continue with ULTRA-LIGHT deployment for your ${TOTAL_RAM}MB RAM VM? (y/N)"
-echo -n "Please type 'y' or 'yes' to continue: "
-read -r response
-echo "You entered: '$response'"
 
-if [[ "$response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
-    echo "✅ Proceeding with deployment..."
-else
-    echo "❌ Deployment cancelled. You entered '$response' (need 'y' or 'yes')"
-    exit 0
-fi
+# Countdown to give user a chance to cancel
+print_warning "⏰ Starting deployment in 10 seconds... (Press Ctrl+C to cancel)"
+for i in {10..1}; do
+    echo -n "$i... "
+    sleep 1
+done
+echo ""
+echo ""
 
 # Start deployment
-echo ""
 print_ultra "🚀 Starting ultra-light deployment for ${TOTAL_RAM}MB RAM VM..."
 
 # Download and execute the ultra-light provisioning script
