@@ -179,9 +179,30 @@ fi
 if [ "$NODE_INSTALLED" = false ]; then
     print_status "Installing Node.js 18.x LTS (minimal)..."
     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt install -y nodejs
-    NODE_VERSION=$(node --version)
-    print_success "Node.js installed: $NODE_VERSION"
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
+
+    # Verify installation
+    if command -v node &> /dev/null && command -v npm &> /dev/null; then
+        NODE_VERSION=$(node --version)
+        NPM_VERSION=$(npm --version)
+        print_success "Node.js installed: $NODE_VERSION"
+        print_success "npm installed: $NPM_VERSION"
+    else
+        print_error "Node.js installation failed. Trying alternative method..."
+        # Alternative installation method
+        sudo apt update
+        sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs npm
+
+        if command -v node &> /dev/null && command -v npm &> /dev/null; then
+            NODE_VERSION=$(node --version)
+            NPM_VERSION=$(npm --version)
+            print_success "Node.js installed via alternative method: $NODE_VERSION"
+            print_success "npm installed: $NPM_VERSION"
+        else
+            print_error "Failed to install Node.js. Cannot continue."
+            exit 1
+        fi
+    fi
 fi
 
 # Clone or update repository
@@ -199,19 +220,53 @@ fi
 print_status "Installing frontend dependencies (ultra-light mode)..."
 cd frontend
 
-# Configure npm for minimal memory usage
-npm config set fund false
-npm config set audit false
-npm config set progress false
+# Verify npm is available
+if ! command -v npm &> /dev/null; then
+    print_error "npm is not available. Node.js installation may have failed."
+    print_status "Attempting to fix npm installation..."
 
-# Install only production dependencies
-npm install --only=production --no-optional --silent
+    # Try to fix npm
+    sudo apt update
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y npm
 
-# Build with minimal memory
-print_status "Building frontend (ultra-light)..."
-export NODE_OPTIONS="--max-old-space-size=256"
-npm run build
-print_success "Frontend built successfully with minimal memory"
+    if ! command -v npm &> /dev/null; then
+        print_error "Cannot install npm. Trying to continue without frontend build..."
+        cd ../backend
+        # Skip frontend build and continue with backend only
+        print_warning "Skipping frontend build due to npm issues"
+        SKIP_FRONTEND=true
+    else
+        print_success "npm fixed and available"
+        SKIP_FRONTEND=false
+    fi
+else
+    SKIP_FRONTEND=false
+fi
+
+if [ "$SKIP_FRONTEND" = false ]; then
+    # Configure npm for minimal memory usage
+    npm config set fund false
+    npm config set audit false
+    npm config set progress false
+
+    # Install only production dependencies
+    npm install --only=production --no-optional --silent
+fi
+
+if [ "$SKIP_FRONTEND" = false ]; then
+    # Build with minimal memory
+    print_status "Building frontend (ultra-light)..."
+    export NODE_OPTIONS="--max-old-space-size=256"
+
+    if npm run build; then
+        print_success "Frontend built successfully with minimal memory"
+    else
+        print_warning "Frontend build failed, but continuing with backend..."
+        SKIP_FRONTEND=true
+    fi
+else
+    print_warning "Skipping frontend build - will serve static files directly"
+fi
 
 # Ultra-light backend setup
 print_status "Setting up backend (ultra-light)..."
@@ -354,8 +409,9 @@ CPUQuota=50%
 WantedBy=multi-user.target
 EOF
 
-# Frontend service with memory limits
-sudo tee /etc/systemd/system/lzcustom-frontend.service > /dev/null <<EOF
+if [ "$SKIP_FRONTEND" = false ]; then
+    # Frontend service with memory limits
+    sudo tee /etc/systemd/system/lzcustom-frontend.service > /dev/null <<EOF
 [Unit]
 Description=LZ Custom Frontend (Ultra-Light)
 After=network.target
@@ -376,11 +432,37 @@ CPUQuota=30%
 WantedBy=multi-user.target
 EOF
 
-# Install serve locally to avoid global installation
-cd ../frontend
-npm install serve --save-dev
+    # Install serve locally to avoid global installation
+    cd ../frontend
+    if command -v npm &> /dev/null; then
+        npm install serve --save-dev || print_warning "Failed to install serve, will try alternative"
+    fi
+    cd ../backend
+else
+    # Create a simple Python-based frontend service as fallback
+    print_warning "Creating Python-based frontend service as npm fallback..."
 
-cd ../backend
+    sudo tee /etc/systemd/system/lzcustom-frontend.service > /dev/null <<EOF
+[Unit]
+Description=LZ Custom Frontend (Ultra-Light Python Fallback)
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$(pwd)/../frontend/dist
+ExecStart=/usr/bin/python3 -m http.server 5173
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+MemoryLimit=32M
+CPUQuota=20%
+
+[Install]
+WantedBy=multi-user.target
+EOF
+fi
 
 # Enable and start services
 print_status "Starting ultra-light services..."
