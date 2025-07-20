@@ -1,0 +1,38 @@
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'azure-app-service/**' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        cd azure-app-service
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Test application
+      run: |
+        cd azure-app-service
+        python -c "from app import app; print('App imports successfully')"
+        
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./azure-app-service
