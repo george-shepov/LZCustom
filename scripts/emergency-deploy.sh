@@ -49,11 +49,31 @@ fi
 
 print_success "RAM: ${TOTAL_RAM}MB (sufficient for emergency deployment)"
 
-# Check for Python3
+# Check for Python3 and required packages
 if ! command -v python3 &> /dev/null; then
     print_status "Installing Python3..."
     sudo apt update
     sudo DEBIAN_FRONTEND=noninteractive apt install -y python3 python3-pip python3-venv
+else
+    print_success "Python3 already installed: $(python3 --version)"
+fi
+
+# Ensure python3-venv is installed (common issue on Ubuntu)
+print_status "Ensuring python3-venv is available..."
+if ! python3 -m venv --help &> /dev/null; then
+    print_warning "python3-venv not available, installing..."
+    sudo apt update
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-venv
+    print_success "python3-venv installed"
+else
+    print_success "python3-venv is available"
+fi
+
+# Also ensure pip is available
+if ! python3 -m pip --version &> /dev/null; then
+    print_warning "pip not available, installing..."
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y python3-pip
+    print_success "python3-pip installed"
 fi
 
 # Check for git
