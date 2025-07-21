@@ -16,23 +16,10 @@ services:
       - AI_MODEL=deepseek
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OLLAMA_ENDPOINT=http://ollama:11434
+      - OLLAMA_ENDPOINT=http://localhost:11434
       - DATABASE_URL=sqlite:///database/lz_custom.db
       - SECRET_KEY=${SECRET_KEY}
     restart: unless-stopped
-    depends_on:
-      - ollama
-      
-  # Ollama for DeepSeek R1
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_HOST=0.0.0.0
-    restart: unless-stopped
+    network_mode: host
 
-volumes:
-  ollama_data:
+# Using host Ollama - no volumes needed
