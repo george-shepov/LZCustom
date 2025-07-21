@@ -1,5 +1,5 @@
-# LZ Custom - Azure App Service Version
-# Optimized for Azure App Service Free Tier
+# LZ Custom - Complete Website with Configurable AI
+# Professional fabrication website with optional AI features
 
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import sqlite3
@@ -7,8 +7,39 @@ import os
 import random
 from datetime import datetime
 import json
+import logging
 
 app = Flask(__name__)
+
+# Configuration
+class Config:
+    # AI Configuration - DISABLED by default
+    AI_ENABLED = os.environ.get('AI_ENABLED', 'false').lower() == 'true'
+    AI_MODEL = os.environ.get('AI_MODEL', 'simple')  # 'simple', 'openai', 'azure', 'local'
+
+    # OpenAI Configuration (if enabled)
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+    OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-3.5-turbo')
+
+    # Azure OpenAI Configuration (if enabled)
+    AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT', '')
+    AZURE_OPENAI_KEY = os.environ.get('AZURE_OPENAI_KEY', '')
+    AZURE_OPENAI_DEPLOYMENT = os.environ.get('AZURE_OPENAI_DEPLOYMENT', '')
+
+    # Local AI Configuration (if enabled)
+    LOCAL_AI_ENDPOINT = os.environ.get('LOCAL_AI_ENDPOINT', 'http://localhost:11434')
+    LOCAL_AI_MODEL = os.environ.get('LOCAL_AI_MODEL', 'llama2')
+
+    # Business Configuration
+    BUSINESS_NAME = os.environ.get('BUSINESS_NAME', 'LZ Custom')
+    BUSINESS_PHONE = os.environ.get('BUSINESS_PHONE', '216-268-2990')
+    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'info@lzcustom.com')
+    SERVICE_AREA = os.environ.get('SERVICE_AREA', 'Northeast Ohio within 30 miles')
+    BUSINESS_HOURS = os.environ.get('BUSINESS_HOURS', 'Mon-Fri 8AM-5PM, Sat 9AM-3PM')
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Database initialization
 def init_db():
