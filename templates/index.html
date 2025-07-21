@@ -3,41 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LZ Custom - Professional Fabrication Services</title>
+    <title>LZ Custom - Premium Fabrication | 30+ Years Northeast Ohio</title>
+    <meta name="description" content="LZ Custom Fabrication - Northeast Ohio's premier custom cabinet and stone fabrication company. 30+ years of excellence in custom kitchens, countertops, and commercial projects.">
+    <meta name="keywords" content="custom cabinets, granite countertops, stone fabrication, kitchen remodeling, Cleveland, Akron, Canton, Northeast Ohio">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="LZ Custom - Premium Fabrication Services">
+    <meta property="og:description" content="30+ years of excellence in custom cabinets, granite countertops, and stone fabrication in Northeast Ohio.">
+    <meta property="og:image" content="{{ url_for('static', filename='assets/gallery/hero/hero-main.jpg') }}">
+    <meta property="og:url" content="https://lzcustom.azurewebsites.net">
+
+    <!-- Schema.org markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "LZ Custom Fabrication",
+      "description": "Custom cabinet and stone fabrication company serving Northeast Ohio for 30+ years",
+      "telephone": "216-268-2990",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "OH",
+        "addressCountry": "US"
+      },
+      "areaServed": "Northeast Ohio",
+      "priceRange": "$$",
+      "openingHours": "Mo-Fr 08:00-17:00, Sa 09:00-15:00"
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <nav class="nav">
+    <header class="header" id="header">
+        <nav class="nav container">
             <div class="nav-brand">
-                <h1>LZ Custom</h1>
-                <span>Professional Fabrication</span>
+                <img src="{{ url_for('static', filename='assets/logo/lz-custom-logo.png') }}" alt="LZ Custom Logo" class="nav-logo">
+                <div class="nav-brand-text">
+                    <h1>LZ Custom</h1>
+                    <span>Premium Fabrication Since 1993</span>
+                </div>
             </div>
-            <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#services">Services</a>
-                <a href="#gallery">Gallery</a>
-                <a href="#contact">Contact</a>
+
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link active">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#services" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="#cabinets" class="dropdown-link">Custom Cabinets</a>
+                            <a href="#countertops" class="dropdown-link">Countertops</a>
+                            <a href="#stone-work" class="dropdown-link">Stone Fabrication</a>
+                            <a href="#commercial" class="dropdown-link">Commercial Projects</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#gallery" class="nav-link">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#testimonials" class="nav-link">Reviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">Contact</a>
+                    </li>
+                </ul>
             </div>
-            <div class="nav-contact">
-                <i class="fas fa-phone"></i>
-                <span>216-268-2990</span>
+
+            <div class="nav-actions">
+                <div class="nav-contact">
+                    <i class="fas fa-phone"></i>
+                    <div class="contact-info">
+                        <span class="phone">216-268-2990</span>
+                        <span class="hours">Mon-Fri 8AM-5PM</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-quote" onclick="scrollToSection('contact')">
+                    Free Quote
+                </button>
+                <div class="nav-toggle" id="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
             </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Custom Fabrication Excellence</h1>
-            <p>Professional cabinets, countertops, and stone work for Northeast Ohio</p>
-            <div class="hero-buttons">
-                <button class="btn-primary" onclick="scrollToSection('contact')">Get Quote</button>
-                <button class="btn-secondary" onclick="scrollToSection('gallery')">View Gallery</button>
+        <div class="hero-background">
+            <div class="hero-slider">
+                <div class="hero-slide active" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-kitchen-1.jpg') }}')"></div>
+                <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-countertop-1.jpg') }}')"></div>
+                <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-cabinet-1.jpg') }}')"></div>
             </div>
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="hero-content container">
+            <div class="hero-text">
+                <span class="hero-subtitle">Northeast Ohio's Premier Fabrication Company</span>
+                <h1 class="hero-title">
+                    <span class="title-line">Custom Fabrication</span>
+                    <span class="title-line highlight">Excellence</span>
+                    <span class="title-line">Since 1993</span>
+                </h1>
+                <p class="hero-description">
+                    Transform your space with our premium custom cabinets, granite countertops, and stone fabrication.
+                    30+ years of craftsmanship serving Cleveland, Akron, Canton, and all of Northeast Ohio.
+                </p>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5000+</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Satisfaction Rate</span>
+                    </div>
+                </div>
+
+                <div class="hero-buttons">
+                    <button type="button" class="btn-primary" onclick="scrollToSection('contact')">
+                        <i class="fas fa-calculator"></i>
+                        Get Free Quote
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="scrollToSection('gallery')">
+                        <i class="fas fa-images"></i>
+                        View Our Work
+                    </button>
+                    <button type="button" class="btn-tertiary" onclick="window.open('tel:216-268-2990')">
+                        <i class="fas fa-phone"></i>
+                        Call Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-features">
+                <div class="feature">
+                    <i class="fas fa-award"></i>
+                    <span>Licensed & Insured</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-tools"></i>
+                    <span>Custom Fabrication</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-clock"></i>
+                    <span>On-Time Delivery</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-handshake"></i>
+                    <span>Lifetime Warranty</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll">
+            <span>Scroll to explore</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
     </section>
 
@@ -73,29 +216,266 @@
     <!-- Gallery Section -->
     <section id="gallery" class="gallery">
         <div class="container">
-            <h2>Our Work</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format" alt="Custom Kitchen Cabinets">
+            <div class="section-header">
+                <span class="section-subtitle">Our Portfolio</span>
+                <h2 class="section-title">Masterful Craftsmanship</h2>
+                <p class="section-description">
+                    Explore our extensive portfolio of custom fabrication projects. Each piece represents our commitment
+                    to excellence and attention to detail that has made us Northeast Ohio's premier fabrication company.
+                </p>
+            </div>
+
+            <!-- Gallery Filter -->
+            <div class="gallery-filter">
+                <button type="button" class="filter-btn active" data-filter="all">All Projects</button>
+                <button type="button" class="filter-btn" data-filter="kitchens">Kitchens</button>
+                <button type="button" class="filter-btn" data-filter="cabinets">Cabinets</button>
+                <button type="button" class="filter-btn" data-filter="countertops">Countertops</button>
+                <button type="button" class="filter-btn" data-filter="stone">Stone Work</button>
+                <button type="button" class="filter-btn" data-filter="commercial">Commercial</button>
+                <button type="button" class="filter-btn" data-filter="bathrooms">Bathrooms</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Kitchen Projects -->
+                <div class="gallery-item" data-category="kitchens">
+                    <img src="{{ url_for('static', filename='assets/gallery/kitchens/kitchen-modern-1.jpg') }}" alt="Modern Kitchen with Custom Cabinets">
                     <div class="gallery-overlay">
-                        <h3>Custom Kitchen Cabinets</h3>
-                        <p>Oak construction with professional finish</p>
+                        <div class="gallery-content">
+                            <h3>Modern Kitchen Transformation</h3>
+                            <p>Custom white oak cabinets with quartz countertops</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Custom Cabinets</span>
+                                <span class="tag">Quartz Countertops</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-modern-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&auto=format&q=80" alt="Granite Countertops">
+
+                <div class="gallery-item" data-category="kitchens">
+                    <img src="{{ url_for('static', filename='assets/gallery/kitchens/kitchen-traditional-1.jpg') }}" alt="Traditional Kitchen Design">
                     <div class="gallery-overlay">
-                        <h3>Granite Countertops</h3>
-                        <p>Premium granite with precision installation</p>
+                        <div class="gallery-content">
+                            <h3>Traditional Kitchen Elegance</h3>
+                            <p>Cherry wood cabinets with granite countertops</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Cherry Wood</span>
+                                <span class="tag">Granite</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-traditional-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=400&h=300&fit=crop&auto=format" alt="Tile Installation">
+
+                <div class="gallery-item" data-category="kitchens">
+                    <img src="{{ url_for('static', filename='assets/gallery/kitchens/kitchen-luxury-1.jpg') }}" alt="Luxury Kitchen with Island">
                     <div class="gallery-overlay">
-                        <h3>Professional Tile Work</h3>
-                        <p>Precision installation with quality materials</p>
+                        <div class="gallery-content">
+                            <h3>Luxury Kitchen with Island</h3>
+                            <p>Custom walnut cabinets with marble countertops</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Walnut</span>
+                                <span class="tag">Marble</span>
+                                <span class="tag">Island</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-luxury-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
                 </div>
+
+                <!-- Cabinet Projects -->
+                <div class="gallery-item" data-category="cabinets">
+                    <img src="{{ url_for('static', filename='assets/gallery/cabinets/cabinet-custom-1.jpg') }}" alt="Custom Built-in Cabinets">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Custom Built-in Storage</h3>
+                            <p>Floor-to-ceiling custom cabinetry</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Built-ins</span>
+                                <span class="tag">Storage</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-custom-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="cabinets">
+                    <img src="{{ url_for('static', filename='assets/gallery/cabinets/cabinet-office-1.jpg') }}" alt="Office Cabinet System">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Home Office Cabinet System</h3>
+                            <p>Organized workspace with custom storage</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Office</span>
+                                <span class="tag">Organization</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-office-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Countertop Projects -->
+                <div class="gallery-item" data-category="countertops">
+                    <img src="{{ url_for('static', filename='assets/gallery/countertops/granite-1.jpg') }}" alt="Granite Countertop Installation">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Premium Granite Countertops</h3>
+                            <p>Black galaxy granite with undermount sink</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Granite</span>
+                                <span class="tag">Undermount</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('granite-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="countertops">
+                    <img src="{{ url_for('static', filename='assets/gallery/countertops/quartz-1.jpg') }}" alt="Quartz Countertop Design">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Engineered Quartz Beauty</h3>
+                            <p>Calacatta quartz with waterfall edge</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Quartz</span>
+                                <span class="tag">Waterfall Edge</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('quartz-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stone Work Projects -->
+                <div class="gallery-item" data-category="stone">
+                    <img src="{{ url_for('static', filename='assets/gallery/stone/fireplace-1.jpg') }}" alt="Stone Fireplace Surround">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Stone Fireplace Surround</h3>
+                            <p>Natural stone with custom mantel</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Natural Stone</span>
+                                <span class="tag">Fireplace</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('fireplace-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="stone">
+                    <img src="{{ url_for('static', filename='assets/gallery/stone/backsplash-1.jpg') }}" alt="Stone Backsplash Design">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Custom Stone Backsplash</h3>
+                            <p>Travertine with decorative border</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Travertine</span>
+                                <span class="tag">Backsplash</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('backsplash-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Commercial Projects -->
+                <div class="gallery-item" data-category="commercial">
+                    <img src="{{ url_for('static', filename='assets/gallery/commercial/restaurant-1.jpg') }}" alt="Commercial Restaurant Kitchen">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Commercial Restaurant Kitchen</h3>
+                            <p>Stainless steel and stone surfaces</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Commercial</span>
+                                <span class="tag">Restaurant</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('restaurant-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="commercial">
+                    <img src="{{ url_for('static', filename='assets/gallery/commercial/office-1.jpg') }}" alt="Commercial Office Space">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Corporate Office Renovation</h3>
+                            <p>Modern reception and workspace design</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Office</span>
+                                <span class="tag">Corporate</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('office-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bathroom Projects -->
+                <div class="gallery-item" data-category="bathrooms">
+                    <img src="{{ url_for('static', filename='assets/gallery/bathrooms/vanity-1.jpg') }}" alt="Custom Bathroom Vanity">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Custom Bathroom Vanity</h3>
+                            <p>Double vanity with granite tops</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Vanity</span>
+                                <span class="tag">Granite</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('vanity-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-category="bathrooms">
+                    <img src="{{ url_for('static', filename='assets/gallery/bathrooms/shower-1.jpg') }}" alt="Stone Shower Surround">
+                    <div class="gallery-overlay">
+                        <div class="gallery-content">
+                            <h3>Luxury Stone Shower</h3>
+                            <p>Marble shower with custom niche</p>
+                            <div class="gallery-tags">
+                                <span class="tag">Marble</span>
+                                <span class="tag">Shower</span>
+                            </div>
+                        </div>
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('shower-1')">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="gallery-actions">
+                <button type="button" class="btn-load-more" id="load-more-btn">
+                    <i class="fas fa-plus"></i>
+                    Load More Projects
+                </button>
+                <p class="gallery-count">
+                    Showing <span id="shown-count">12</span> of <span id="total-count">100+</span> projects
+                </p>
             </div>
         </div>
     </section>

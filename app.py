@@ -1,41 +1,43 @@
-# LZ Custom - Complete Website with Configurable AI
-# Professional fabrication website with optional AI features
+# LZ Custom - Complete Professional Website
+# Full-featured fabrication website with all original components (AI disabled until VPS Dime)
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for
 import sqlite3
 import os
 import random
 from datetime import datetime
 import json
 import logging
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 # Configuration
 class Config:
-    # AI Configuration - DISABLED by default
-    AI_ENABLED = os.environ.get('AI_ENABLED', 'false').lower() == 'true'
-    AI_MODEL = os.environ.get('AI_MODEL', 'simple')  # 'simple', 'openai', 'azure', 'local'
-
-    # OpenAI Configuration (if enabled)
-    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
-    OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-3.5-turbo')
-
-    # Azure OpenAI Configuration (if enabled)
-    AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT', '')
-    AZURE_OPENAI_KEY = os.environ.get('AZURE_OPENAI_KEY', '')
-    AZURE_OPENAI_DEPLOYMENT = os.environ.get('AZURE_OPENAI_DEPLOYMENT', '')
-
-    # Local AI Configuration (if enabled)
-    LOCAL_AI_ENDPOINT = os.environ.get('LOCAL_AI_ENDPOINT', 'http://localhost:11434')
-    LOCAL_AI_MODEL = os.environ.get('LOCAL_AI_MODEL', 'llama2')
+    # AI Configuration - DISABLED for Azure (will enable on VPS Dime)
+    AI_ENABLED = False  # Hardcoded to False for Azure deployment
+    AI_MODEL = 'simple'  # Simple responses only
 
     # Business Configuration
-    BUSINESS_NAME = os.environ.get('BUSINESS_NAME', 'LZ Custom')
-    BUSINESS_PHONE = os.environ.get('BUSINESS_PHONE', '216-268-2990')
-    BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'info@lzcustom.com')
-    SERVICE_AREA = os.environ.get('SERVICE_AREA', 'Northeast Ohio within 30 miles')
-    BUSINESS_HOURS = os.environ.get('BUSINESS_HOURS', 'Mon-Fri 8AM-5PM, Sat 9AM-3PM')
+    BUSINESS_NAME = 'LZ Custom'
+    BUSINESS_PHONE = '216-268-2990'
+    BUSINESS_EMAIL = 'info@lzcustom.com'
+    SERVICE_AREA = 'Northeast Ohio - Cleveland, Akron, Canton, Youngstown, Lorain, Ashtabula'
+    BUSINESS_HOURS = 'Mon-Fri 8AM-5PM, Sat 9AM-3PM'
+    YEARS_EXPERIENCE = '30+'
+
+    # Gallery Configuration
+    GALLERY_ENABLED = True
+    TOTAL_IMAGES = 100  # Your Midjourney images
+
+    # Database Configuration
+    DATABASE_PATH = 'lz_custom.db'
+
+    # Upload Configuration
+    UPLOAD_FOLDER = 'static/uploads'
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+
+app.config.from_object(Config)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
