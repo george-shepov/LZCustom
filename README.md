@@ -355,7 +355,7 @@ Try asking these questions:
 
 ## 📄 **License**
 
-This project is proprietary and confidential. All rights reserved by LZ Custom Fabrication.
+All rights reserved by Giorgiy Shepov.
 
 ## 🐧 Deployment Scripts
 
