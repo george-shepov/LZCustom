@@ -86,11 +86,20 @@
             </div>
 
             <div class="nav-actions">
+                <!-- Business Status Indicator -->
+                <div class="business-status" id="business-status">
+                    <div class="status-indicator">
+                        <span class="status-dot" id="status-dot"></span>
+                        <span class="status-text" id="status-text">Loading...</span>
+                    </div>
+                    <div class="status-hours" id="status-hours">Mon-Fri 8AM-5PM</div>
+                </div>
+
                 <div class="nav-contact">
                     <i class="fas fa-phone"></i>
                     <div class="contact-info">
                         <span class="phone">216-268-2990</span>
-                        <span class="hours">Mon-Fri 8AM-5PM</span>
+                        <span class="hours">Call Now</span>
                     </div>
                 </div>
                 <button type="button" class="btn-quote" onclick="scrollToSection('contact')">
@@ -104,14 +113,60 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <section id="home" class="hero fullscreen">
         <div class="hero-background">
-            <div class="hero-slider">
-                <div class="hero-slide hero-slide-kitchen active"></div>
-                <div class="hero-slide hero-slide-countertop"></div>
-                <div class="hero-slide hero-slide-cabinet"></div>
+            <div class="hero-slider" id="hero-slider">
+                <div class="hero-slide hero-slide-kitchen active">
+                    <div class="slide-content">
+                        <h2>Luxury Kitchen Transformations</h2>
+                        <p>Custom cabinets and premium countertops</p>
+                    </div>
+                </div>
+                <div class="hero-slide hero-slide-countertop">
+                    <div class="slide-content">
+                        <h2>Premium Stone Fabrication</h2>
+                        <p>Granite, quartz, and marble countertops</p>
+                    </div>
+                </div>
+                <div class="hero-slide hero-slide-cabinet">
+                    <div class="slide-content">
+                        <h2>Custom Cabinet Solutions</h2>
+                        <p>Handcrafted storage for every space</p>
+                    </div>
+                </div>
+                <div class="hero-slide hero-slide-commercial">
+                    <div class="slide-content">
+                        <h2>Commercial Projects</h2>
+                        <p>Professional fabrication for businesses</p>
+                    </div>
+                </div>
+                <div class="hero-slide hero-slide-bathroom">
+                    <div class="slide-content">
+                        <h2>Bathroom Renovations</h2>
+                        <p>Elegant vanities and stone surfaces</p>
+                    </div>
+                </div>
             </div>
             <div class="hero-overlay"></div>
+
+            <!-- Slider Controls -->
+            <div class="slider-controls">
+                <button type="button" class="slider-btn prev" onclick="changeSlide(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" class="slider-btn next" onclick="changeSlide(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Slider Indicators -->
+            <div class="slider-indicators">
+                <button type="button" class="indicator active" onclick="goToSlide(0)"></button>
+                <button type="button" class="indicator" onclick="goToSlide(1)"></button>
+                <button type="button" class="indicator" onclick="goToSlide(2)"></button>
+                <button type="button" class="indicator" onclick="goToSlide(3)"></button>
+                <button type="button" class="indicator" onclick="goToSlide(4)"></button>
+            </div>
         </div>
 
         <div class="hero-content container">
