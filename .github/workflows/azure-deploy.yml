@@ -1,9 +1,8 @@
-name: Deploy to Azure App Service
+name: Deploy LZ Custom to Azure App Service
 
 on:
   push:
     branches: [ main ]
-    paths: [ 'azure-app-service/**' ]
   workflow_dispatch:
 
 jobs:
@@ -21,13 +20,11 @@ jobs:
         
     - name: Install dependencies
       run: |
-        cd azure-app-service
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
     - name: Test application
       run: |
-        cd azure-app-service
         python -c "from app import app; print('App imports successfully')"
         
     - name: Deploy to Azure App Service

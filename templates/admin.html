@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LZ Custom - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app" class="admin-app">
+        <div class="dashboard-container">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <h1>LZ Custom - Admin Dashboard</h1>
+                
+                <!-- Navigation Tabs -->
+                <div class="nav-tabs">
+                    <button 
+                        @click="activeTab = 'leads'" 
+                        :class="{ active: activeTab === 'leads' }"
+                        class="nav-tab"
+                    >
+                        <i class="fas fa-users"></i>
+                        Lead Management
+                    </button>
+                    <button 
+                        @click="activeTab = 'analytics'" 
+                        :class="{ active: activeTab === 'analytics' }"
+                        class="nav-tab"
+                    >
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </button>
+                </div>
+
+                <!-- Stats Grid (shown on leads tab) -->
+                <div v-if="activeTab === 'leads'" class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ prospects.length }}</div>
+                        <div class="stat-label">Total Leads</div>
+                    </div>
+                    <div class="stat-card high-priority">
+                        <div class="stat-number">{{ highPriorityCount }}</div>
+                        <div class="stat-label">High Priority</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ newLeadsCount }}</div>
+                        <div class="stat-label">New Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ chatStats.total || 0 }}</div>
+                        <div class="stat-label">Chat Conversations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leads Management Tab -->
+            <div v-if="activeTab === 'leads'" class="prospects-table">
+                <div class="table-header">
+                    <h2>Lead Inquiries</h2>
+                    <div class="table-controls">
+                        <input 
+                            v-model="searchQuery" 
+                            placeholder="Search leads..." 
+                            class="search-input"
+                        />
+                        <select v-model="statusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="quoted">Quoted</option>
+                            <option value="won">Won</option>
+                            <option value="lost">Lost</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Name</th>
+                            <th>Project</th>
+                            <th>Budget</th>
+                            <th>Timeline</th>
+                            <th>Contact</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="prospect in filteredProspects" :key="prospect.id" 
+                            :class="{ 'high-priority': prospect.priority === 'high' }">
+                            <td>
+                                <span class="priority-badge" :class="prospect.priority">
+                                    {{ prospect.priority }}
+                                </span>
+                            </td>
+                            <td class="name-cell">
+                                <strong>{{ prospect.name || 'No name provided' }}</strong>
+                            </td>
+                            <td>{{ formatProjectType(prospect.project_type) }}</td>
+                            <td>{{ formatBudget(prospect.budget_range) }}</td>
+                            <td>{{ formatTimeline(prospect.timeline) }}</td>
+                            <td>
+                                <div class="contact-info">
+                                    <a v-if="prospect.phone" :href="`tel:${prospect.phone}`">{{ prospect.phone }}</a>
+                                    <a v-if="prospect.email" :href="`mailto:${prospect.email}`">{{ prospect.email }}</a>
+                                    <span v-if="!prospect.phone && !prospect.email" class="no-contact">No contact info</span>
+                                </div>
+                            </td>
+                            <td>{{ formatDate(prospect.created_at) }}</td>
+                            <td>
+                                <select v-model="prospect.status" @change="updateStatus(prospect)">
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="quoted">Quoted</option>
+                                    <option value="won">Won</option>
+                                    <option value="lost">Lost</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button @click="viewDetails(prospect)" class="btn-view">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div v-if="activeTab === 'analytics'" class="analytics-section">
+                <h2>Analytics Dashboard</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Chat Statistics</h3>
+                        <div class="stat-row">
+                            <span>Total Conversations:</span>
+                            <span>{{ chatStats.total || 0 }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>This Week:</span>
+                            <span>{{ chatStats.thisWeek || 0 }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Response Type:</span>
+                            <span>Simple Responses</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Lead Sources</h3>
+                        <div class="stat-row">
+                            <span>Form Submissions:</span>
+                            <span>{{ prospects.length }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>High Priority:</span>
+                            <span>{{ highPriorityCount }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Conversion Rate:</span>
+                            <span>{{ conversionRate }}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Azure App Service</h3>
+                        <div class="stat-row">
+                            <span>Hosting:</span>
+                            <span>Azure Free Tier</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Database:</span>
+                            <span>SQLite</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Status:</span>
+                            <span class="status-healthy">Healthy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Prospect View Modal -->
+            <div v-if="selectedProspect" class="modal-overlay" @click="closeModal">
+                <div class="modal-content" @click.stop>
+                    <div class="modal-header">
+                        <h2>Lead Details</h2>
+                        <button @click="closeModal" class="close-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="prospect-details">
+                            <div class="detail-section">
+                                <h3>Contact Information</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Name:</label>
+                                        <span>{{ selectedProspect.name || 'Not provided' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Email:</label>
+                                        <span>{{ selectedProspect.email || 'Not provided' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Phone:</label>
+                                        <span>{{ selectedProspect.phone || 'Not provided' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>Project Information</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Project Type:</label>
+                                        <span>{{ formatProjectType(selectedProspect.project_type) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Budget Range:</label>
+                                        <span>{{ formatBudget(selectedProspect.budget_range) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Timeline:</label>
+                                        <span>{{ formatTimeline(selectedProspect.timeline) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Priority:</label>
+                                        <span class="priority-badge" :class="selectedProspect.priority">
+                                            {{ selectedProspect.priority }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-section" v-if="selectedProspect.message">
+                                <h3>Project Description</h3>
+                                <div class="message-content">
+                                    {{ selectedProspect.message }}
+                                </div>
+                            </div>
+
+                            <div class="detail-section">
+                                <h3>Lead Management</h3>
+                                <div class="management-controls">
+                                    <div class="control-group">
+                                        <label>Status:</label>
+                                        <select v-model="selectedProspect.status" @change="updateStatus(selectedProspect)">
+                                            <option value="new">New</option>
+                                            <option value="contacted">Contacted</option>
+                                            <option value="quoted">Quoted</option>
+                                            <option value="won">Won</option>
+                                            <option value="lost">Lost</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label>Notes:</label>
+                                        <textarea 
+                                            v-model="prospectNotes" 
+                                            placeholder="Add notes about this lead..."
+                                            rows="3"
+                                        ></textarea>
+                                    </div>
+                                    <button @click="saveNotes" class="btn-save">Save Notes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
