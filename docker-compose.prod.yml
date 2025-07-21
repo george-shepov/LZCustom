@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Main Web Application
+  web:
+    build: .
+    ports:
+      - "80:8000"
+    volumes:
+      - ./static:/app/static
+      - ./uploads:/app/uploads
+      - ./database:/app/database
+    environment:
+      - FLASK_ENV=production
+      - AI_ENABLED=true
+      - AI_MODEL=deepseek
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OLLAMA_ENDPOINT=http://ollama:11434
+      - DATABASE_URL=sqlite:///database/lz_custom.db
+      - SECRET_KEY=${SECRET_KEY}
+    restart: unless-stopped
+    depends_on:
+      - ollama
+      
+  # Ollama for DeepSeek R1
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
