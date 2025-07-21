@@ -131,19 +131,35 @@ def get_ollama_response(message):
 def get_openai_response(message):
     """Get response from OpenAI"""
     try:
-        import openai
-        openai.api_key = Config.OPENAI_API_KEY
+        if not Config.OPENAI_API_KEY:
+            return get_simple_response(message)
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
+        headers = {
+            'Authorization': f'Bearer {Config.OPENAI_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+
+        data = {
+            "model": "gpt-3.5-turbo",
+            "messages": [
                 {"role": "system", "content": "You are a helpful assistant for LZ Custom, a fabrication company in Northeast Ohio specializing in custom cabinets, countertops, and stone work."},
                 {"role": "user", "content": message}
             ],
-            max_tokens=150
+            "max_tokens": 150
+        }
+
+        response = requests.post(
+            'https://api.openai.com/v1/chat/completions',
+            headers=headers,
+            json=data,
+            timeout=30
         )
 
-        return response.choices[0].message.content
+        if response.status_code == 200:
+            return response.json()['choices'][0]['message']['content']
+        else:
+            return get_simple_response(message)
+
     except Exception as e:
         logger.error(f"OpenAI error: {e}")
         return get_simple_response(message)
