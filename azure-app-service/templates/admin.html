@@ -66,7 +66,8 @@
                             placeholder="Search leads..." 
                             class="search-input"
                         />
-                        <select v-model="statusFilter" class="filter-select">
+                        <label for="statusFilter" class="visually-hidden">Filter by status</label>
+                        <select id="statusFilter" v-model="statusFilter" class="filter-select">
                             <option value="">All Status</option>
                             <option value="new">New</option>
                             <option value="contacted">Contacted</option>
@@ -114,7 +115,7 @@
                             </td>
                             <td>{{ formatDate(prospect.created_at) }}</td>
                             <td>
-                                <select v-model="prospect.status" @change="updateStatus(prospect)">
+                                <select v-model="prospect.status" @change="updateStatus(prospect)" aria-label="Lead status">
                                     <option value="new">New</option>
                                     <option value="contacted">Contacted</option>
                                     <option value="quoted">Quoted</option>
@@ -189,8 +190,9 @@
                 <div class="modal-content" @click.stop>
                     <div class="modal-header">
                         <h2>Lead Details</h2>
-                        <button @click="closeModal" class="close-btn">
-                            <i class="fas fa-times"></i>
+                        <button type="button" @click="closeModal" class="close-btn" title="Close modal">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                            <span class="visually-hidden">Close</span>
                         </button>
                     </div>
                     
@@ -250,7 +252,8 @@
                                 <div class="management-controls">
                                     <div class="control-group">
                                         <label>Status:</label>
-                                        <select v-model="selectedProspect.status" @change="updateStatus(selectedProspect)">
+                                        <label for="modal-status-select" class="visually-hidden">Status</label>
+                                        <select id="modal-status-select" v-model="selectedProspect.status" @change="updateStatus(selectedProspect)" aria-label="Status">
                                             <option value="new">New</option>
                                             <option value="contacted">Contacted</option>
                                             <option value="quoted">Quoted</option>

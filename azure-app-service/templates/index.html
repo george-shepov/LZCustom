@@ -128,7 +128,8 @@
                     </div>
                     <div class="form-row">
                         <input type="tel" name="phone" placeholder="Phone Number">
-                        <select name="project">
+                        <label for="project" class="visually-hidden">Project Type</label>
+                        <select name="project" id="project">
                             <option value="">Select Project Type</option>
                             <option value="cabinets">Kitchen Cabinets</option>
                             <option value="countertops">Countertops</option>
@@ -138,7 +139,8 @@
                         </select>
                     </div>
                     <div class="form-row">
-                        <select name="budget">
+                        <label for="budget" class="visually-hidden">Budget Range</label>
+                        <select name="budget" id="budget">
                             <option value="">Budget Range</option>
                             <option value="under-5k">Under $5,000</option>
                             <option value="5k-15k">$5,000 - $15,000</option>
@@ -146,7 +148,8 @@
                             <option value="30k-50k">$30,000 - $50,000</option>
                             <option value="over-50k">Over $50,000</option>
                         </select>
-                        <select name="timeline">
+                        <label for="timeline" class="visually-hidden">Timeline</label>
+                        <select name="timeline" id="timeline">
                             <option value="">Timeline</option>
                             <option value="asap">ASAP</option>
                             <option value="1-month">Within 1 Month</option>

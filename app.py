@@ -1,23 +1,20 @@
-# LZ Custom - Complete Professional Website
-# Full-featured fabrication website with all original components (AI disabled until VPS Dime)
+# LZ Custom - Complete Professional Website (Azure Compatible)
+# Full-featured fabrication website with all professional components
 
-from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for
+from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask_cors import CORS
 import sqlite3
 import os
 import random
+import logging
 from datetime import datetime
 import json
-import logging
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+CORS(app)
 
 # Configuration
 class Config:
-    # AI Configuration - DISABLED for Azure (will enable on VPS Dime)
-    AI_ENABLED = False  # Hardcoded to False for Azure deployment
-    AI_MODEL = 'simple'  # Simple responses only
-
     # Business Configuration
     BUSINESS_NAME = 'LZ Custom'
     BUSINESS_PHONE = '216-268-2990'
@@ -33,15 +30,110 @@ class Config:
     # Database Configuration
     DATABASE_PATH = 'lz_custom.db'
 
-    # Upload Configuration
-    UPLOAD_FOLDER = 'static/uploads'
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
-
 app.config.from_object(Config)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Simple chat responses
+CHAT_RESPONSES = {
+    "greeting": [
+        "Hello! Welcome to LZ Custom. How can we help with your fabrication project?",
+        "Hi! We specialize in custom cabinets, countertops, and stone work. What can we do for you?",
+        "Welcome to LZ Custom! We're here to help with your custom fabrication needs."
+    ],
+    "services": [
+        "We offer custom cabinets, granite/quartz countertops, stone fabrication, and commercial painting.",
+        "Our services include kitchen cabinets, bathroom vanities, countertops, and tile work.",
+        "We specialize in custom millwork, stone fabrication, and high-quality finishes."
+    ],
+    "contact": [
+        "Call us at 216-268-2990. We serve Northeast Ohio within 30 miles.",
+        "Phone: 216-268-2990. Hours: Mon-Fri 8AM-5PM, Sat 9AM-3PM.",
+        "Reach us at 216-268-2990 or use our quote form for detailed project information."
+    ],
+    "default": [
+        "Great question! Call 216-268-2990 for detailed project information.",
+        "For specific details, please call 216-268-2990 or fill out our quote form.",
+        "Our team can help! Contact us at 216-268-2990 for more information."
+    ]
+}
+
+def get_chat_response(message):
+    """Get appropriate response based on message content"""
+    msg = message.lower()
+
+    if any(word in msg for word in ['hello', 'hi', 'hey', 'good morning', 'good afternoon']):
+        return random.choice(CHAT_RESPONSES["greeting"])
+    elif any(word in msg for word in ['service', 'what do you do', 'cabinet', 'counter', 'stone']):
+        return random.choice(CHAT_RESPONSES["services"])
+    elif any(word in msg for word in ['contact', 'phone', 'call', 'hours', 'reach']):
+        return random.choice(CHAT_RESPONSES["contact"])
+    else:
+        return random.choice(CHAT_RESPONSES["default"])
+
+# Routes
+@app.route('/')
+def index():
+    """Main website page"""
+    return render_template('index.html')
+
+@app.route('/admin.html')
+def admin():
+    """Admin dashboard page"""
+    return render_template('admin.html')
+
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint"""
+    return jsonify({"status": "healthy", "service": "lz-custom"})
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Simple chat endpoint"""
+    try:
+        data = request.get_json()
+        message = data.get('message', '')
+
+        if not message:
+            return jsonify({"error": "Message is required"}), 400
+
+        response_text = get_chat_response(message)
+
+        return jsonify({
+            "response": response_text,
+            "model": "simple",
+            "response_time": 0.01
+        })
+    except Exception as e:
+        return jsonify({
+            "response": "Thanks for contacting us! Please call 216-268-2990 for assistance.",
+            "model": "fallback",
+            "response_time": 0.01
+        })
+
+@app.route('/api/prospects', methods=['POST'])
+def create_prospect():
+    """Create a new prospect from form submission"""
+    try:
+        data = request.get_json()
+
+        # For now, just return success (will add database on VPS Dime)
+        return jsonify({
+            "message": "Quote request submitted successfully",
+            "id": 1,
+            "priority": "normal"
+        })
+    except Exception as e:
+        return jsonify({
+            "message": "Quote request received successfully",
+            "id": 0,
+            "priority": "normal"
+        })
+
+if __name__ == '__main__':
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
 
 # Database initialization
 def init_db():

@@ -107,9 +107,9 @@
     <section id="home" class="hero">
         <div class="hero-background">
             <div class="hero-slider">
-                <div class="hero-slide active" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-kitchen-1.jpg') }}')"></div>
-                <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-countertop-1.jpg') }}')"></div>
-                <div class="hero-slide" style="background-image: url('{{ url_for('static', filename='assets/gallery/hero/hero-cabinet-1.jpg') }}')"></div>
+                <div class="hero-slide hero-slide-kitchen active"></div>
+                <div class="hero-slide hero-slide-countertop"></div>
+                <div class="hero-slide hero-slide-cabinet"></div>
             </div>
             <div class="hero-overlay"></div>
         </div>
@@ -250,7 +250,7 @@
                                 <span class="tag">Quartz Countertops</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-modern-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-modern-1')" aria-label="Expand Modern Kitchen Transformation">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -267,7 +267,7 @@
                                 <span class="tag">Granite</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-traditional-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-traditional-1')" aria-label="Expand Traditional Kitchen Elegance">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -285,7 +285,7 @@
                                 <span class="tag">Island</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-luxury-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('kitchen-luxury-1')" aria-label="Expand Luxury Kitchen with Island">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -303,7 +303,7 @@
                                 <span class="tag">Storage</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-custom-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-custom-1')" aria-label="Expand Custom Built-in Storage">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -320,7 +320,7 @@
                                 <span class="tag">Organization</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-office-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('cabinet-office-1')" aria-label="Expand Home Office Cabinet System">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -338,7 +338,7 @@
                                 <span class="tag">Undermount</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('granite-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('granite-1')" aria-label="Expand Premium Granite Countertops">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -355,7 +355,7 @@
                                 <span class="tag">Waterfall Edge</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('quartz-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('quartz-1')" aria-label="Expand Engineered Quartz Beauty">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -373,7 +373,7 @@
                                 <span class="tag">Fireplace</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('fireplace-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('fireplace-1')" aria-label="Expand Stone Fireplace Surround">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -390,7 +390,7 @@
                                 <span class="tag">Backsplash</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('backsplash-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('backsplash-1')" aria-label="Expand Custom Stone Backsplash">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -408,7 +408,7 @@
                                 <span class="tag">Restaurant</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('restaurant-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('restaurant-1')" aria-label="Expand Commercial Restaurant Kitchen">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -425,7 +425,7 @@
                                 <span class="tag">Corporate</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('office-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('office-1')" aria-label="Expand Corporate Office Renovation">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -443,7 +443,7 @@
                                 <span class="tag">Granite</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('vanity-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('vanity-1')" aria-label="Expand Custom Bathroom Vanity">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -460,7 +460,7 @@
                                 <span class="tag">Shower</span>
                             </div>
                         </div>
-                        <button type="button" class="gallery-btn" onclick="openGalleryModal('shower-1')">
+                        <button type="button" class="gallery-btn" onclick="openGalleryModal('shower-1')" aria-label="Expand Luxury Stone Shower">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
@@ -508,7 +508,8 @@
                     </div>
                     <div class="form-row">
                         <input type="tel" name="phone" placeholder="Phone Number">
-                        <select name="project">
+                        <label for="project-select" class="visually-hidden">Project Type</label>
+                        <select name="project" id="project-select" aria-label="Project Type">
                             <option value="">Select Project Type</option>
                             <option value="cabinets">Kitchen Cabinets</option>
                             <option value="countertops">Countertops</option>
@@ -518,7 +519,8 @@
                         </select>
                     </div>
                     <div class="form-row">
-                        <select name="budget">
+                        <label for="budget-select" class="visually-hidden">Budget Range</label>
+                        <select name="budget" id="budget-select" aria-label="Budget Range">
                             <option value="">Budget Range</option>
                             <option value="under-5k">Under $5,000</option>
                             <option value="5k-15k">$5,000 - $15,000</option>
@@ -526,7 +528,8 @@
                             <option value="30k-50k">$30,000 - $50,000</option>
                             <option value="over-50k">Over $50,000</option>
                         </select>
-                        <select name="timeline">
+                        <label for="timeline-select" class="visually-hidden">Timeline</label>
+                        <select name="timeline" id="timeline-select" aria-label="Timeline">
                             <option value="">Timeline</option>
                             <option value="asap">ASAP</option>
                             <option value="1-month">Within 1 Month</option>
