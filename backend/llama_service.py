@@ -152,7 +152,7 @@ YOUR ROLE:
                 "success": True
             }
             
-        except (asyncio.TimeoutError, aiohttp.ClientTimeout):
+        except (asyncio.TimeoutError, aiohttp.ClientError):
             # Fallback to faster model if timeout
             if tier != ModelTier.FAST:
                 return await self.generate_response(question, ModelTier.FAST)
@@ -179,7 +179,7 @@ YOUR ROLE:
         }
         
         try:
-            timeout = aiohttp.ClientTimeout(total=config.timeout)
+            timeout = aiohttp.ClientError(total=config.timeout)
             print(f"🔗 Connecting to {self.base_url}/api/chat with timeout {config.timeout}s")
 
             async with self.session.post(
@@ -197,7 +197,7 @@ YOUR ROLE:
                     error_text = await response.text()
                     print(f"❌ Ollama API error {response.status}: {error_text}")
                     raise Exception(f"Ollama API error: {response.status}")
-        except aiohttp.ClientTimeout as e:
+        except aiohttp.ClientError as e:
             print(f"⏰ Ollama timeout: {e}")
             raise Exception(f"Ollama timeout: {e}")
         except aiohttp.ClientError as e:
