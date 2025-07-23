@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+services:
+  # LZ Custom Frontend - Professional Fabrication Website
+=======
 version: '3.8'
 
 services:
@@ -26,16 +30,24 @@ services:
       - web-network
 
   # LZ Custom - Main Professional Website
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   lzcustom-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: lzcustom-frontend
+<<<<<<< HEAD
+    ports:
+      - "3000:5173"
+    volumes:
+      - ./frontend/public/assets:/app/public/assets
+=======
     expose:
       - "5173"
     volumes:
       - ./frontend/public/assets:/app/public/assets
       - ./backups/lzcustom-frontend:/app/backups
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     environment:
       - NODE_ENV=production
       - VITE_API_URL=http://lzcustom-backend:8000
@@ -43,16 +55,27 @@ services:
     networks:
       - web-network
 
+<<<<<<< HEAD
+  # LZ Custom Backend - API and AI Services
+=======
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   lzcustom-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: lzcustom-backend
+<<<<<<< HEAD
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./database:/app/database
+=======
     expose:
       - "8000"
     volumes:
       - ./database:/app/database
       - ./backups/lzcustom-backend:/app/backups
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     environment:
       - PYTHONPATH=/app
       - DATABASE_PATH=/app/database/lz_custom.db
@@ -63,18 +86,43 @@ services:
     networks:
       - web-network
 
+<<<<<<< HEAD
+  # Ollama - Local LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11435:11434"
+=======
   # Ollama for LLM functionality
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
     expose:
       - "11434"
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped
     networks:
       - web-network
 
+<<<<<<< HEAD
+  # Nginx - Reverse Proxy and SSL Termination
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - lzcustom-frontend
+      - lzcustom-backend
+=======
   # Giorgiy.org - Main Landing
   giorgiy-site:
     image: nginx:alpine
@@ -246,15 +294,19 @@ services:
           sleep 86400  # Wait 24 hours
         done
       "
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     restart: unless-stopped
     networks:
       - web-network
 
 volumes:
+<<<<<<< HEAD
+=======
   mysql-data:
   wordpress-data:
   ghost-data:
   roundcube-data:
+>>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   ollama-data:
 
 networks:
