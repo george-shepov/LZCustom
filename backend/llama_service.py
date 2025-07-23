@@ -1,89 +1,46 @@
-"""
-LLaMA Local AI Service for LZ Custom Fabrication
-Intelligent model routing based on question complexity
-"""
-
 import asyncio
 import aiohttp
-import json
-import re
 import time
-from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
+import os
 from enum import Enum
+from typing import Dict, Optional
+from dataclasses import dataclass
 
 class ModelTier(Enum):
-    FAST = "llama3.2:3b"           # Simple questions, quick responses
-    MEDIUM = "gemma3:4b"           # Moderate complexity
-    ADVANCED = "qwen2.5:7b"        # Technical fabrication questions
-    EXPERT = "llama4:16x17b"       # Complex design/engineering questions
+    FAST = "fast"
+    MEDIUM = "medium"
+    ADVANCED = "advanced"
+    EXPERT = "expert"
 
 @dataclass
 class ModelConfig:
-    name: str
-    max_tokens: int
-    temperature: float
+    model_name: str
     timeout: int
-    
-MODEL_CONFIGS = {
-    ModelTier.FAST: ModelConfig("llama3.2:3b", 150, 0.3, 15),
-    ModelTier.MEDIUM: ModelConfig("gemma3:4b", 250, 0.5, 20),
-    ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 400, 0.7, 25),
-    ModelTier.EXPERT: ModelConfig("llama4:16x17b", 600, 0.8, 30)
-}
+    max_tokens: int
 
 class QuestionClassifier:
-    """Classifies questions to determine appropriate model tier"""
-    
-    SIMPLE_PATTERNS = [
-        r'\b(hours?|open|closed|phone|contact|address|location)\b',
-        r'\b(hello|hi|hey|thanks?|thank you)\b',
-        r'\b(yes|no|ok|okay)\b',
-        r'\b(price|cost|how much)\b',
-        r'\b(when|what time)\b'
-    ]
-    
-    TECHNICAL_PATTERNS = [
-        r'\b(granite|marble|quartz|quartzite|engineered stone)\b',
-        r'\b(fabrication|installation|templating|cutting)\b',
-        r'\b(edge profile|bullnose|ogee|beveled)\b',
-        r'\b(cabinet|door|drawer|hardware)\b',
-        r'\b(dimensions?|measurements?|square feet?)\b'
-    ]
-    
-    COMPLEX_PATTERNS = [
-        r'\b(design|layout|custom|specification)\b',
-        r'\b(structural|load bearing|support)\b',
-        r'\b(commercial|industrial|restaurant)\b',
-        r'\b(timeline|project management|coordination)\b',
-        r'\b(material comparison|pros and cons)\b'
-    ]
-    
-    @classmethod
-    def classify_question(cls, question: str) -> ModelTier:
-        """Determine the appropriate model tier for a question"""
+    @staticmethod
+    def classify_question(question: str) -> ModelTier:
+        """Classify question complexity"""
         question_lower = question.lower()
-        
-        # Count pattern matches
-        simple_matches = sum(1 for pattern in cls.SIMPLE_PATTERNS 
-                           if re.search(pattern, question_lower))
-        technical_matches = sum(1 for pattern in cls.TECHNICAL_PATTERNS 
-                              if re.search(pattern, question_lower))
-        complex_matches = sum(1 for pattern in cls.COMPLEX_PATTERNS 
-                            if re.search(pattern, question_lower))
-        
-        # Question length factor
         word_count = len(question.split())
         
-        # Decision logic
-        if simple_matches >= 1 and word_count < 10:
+        # Technical keywords
+        technical_keywords = [
+            'granite', 'quartz', 'marble', 'countertop', 'cabinet', 'installation',
+            'fabrication', 'cnc', 'cutting', 'edge', 'backsplash', 'tile'
+        ]
+        
+        technical_matches = sum(1 for keyword in technical_keywords if keyword in question_lower)
+        
+        if word_count <= 5 and technical_matches == 0:
             return ModelTier.FAST
-        elif complex_matches >= 2 or word_count > 30:
-            return ModelTier.EXPERT
-        elif technical_matches >= 1 or word_count > 15:
+        elif technical_matches >= 2 or word_count > 20:
             return ModelTier.ADVANCED
-        else:
+        elif technical_matches >= 1 or word_count > 15:
             return ModelTier.MEDIUM
+        else:
+            return ModelTier.FAST
 
 class LLaMAService:
     """Service for interacting with local LLaMA models via Ollama"""
@@ -92,114 +49,109 @@ class LLaMAService:
         # Use environment variable or default
         self.base_url = base_url or os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
         self.session = None
+        self.classifier = QuestionClassifier()
         
-        # LZ Custom context for all models
-        self.system_context = """You are a friendly, knowledgeable customer service representative for LZ Custom Fabrication, Northeast Ohio's premier custom cabinet and stone fabrication company with over 30 years of excellence.
-
-COMPANY OVERVIEW:
-LZ Custom Fabrication specializes in luxury custom cabinets and premium stone fabrication. We serve discerning homeowners and commercial clients within 30 miles of Cleveland, Ohio.
-
-OUR SERVICES & EXPERTISE:
-• Custom Cabinets: Handcrafted from premium hardwoods (Oak, Maple, Cherry, Walnut)
-  - Timeline: 4-6 weeks | Investment: $15,000-$50,000+
-• Premium Countertops: Granite, Marble, Quartz, and exotic stones
-  - Timeline: 2-3 weeks | Investment: $3,000-$15,000
-• Master Stone Fabrication: Custom stone work and architectural elements
-  - Timeline: 2-4 weeks | Investment: $2,000-$20,000
-• Commercial Surfaces: Restaurant, office, and retail installations
-  - Timeline: 1-2 weeks | Investment: $1,000-$10,000
-
-CONTACT & BUSINESS INFO:
-📞 Phone: 216-268-2990
-🕒 Hours: Monday-Friday 8:00 AM - 5:00 PM
-📍 Service Area: 30-mile radius from Cleveland, Ohio
-✅ Licensed & Insured | BBB A+ Rating
-💰 FREE consultations and estimates
-
-YOUR ROLE:
-- Be warm, professional, and genuinely helpful
-- Answer questions about services, materials, timelines, and processes
-- Encourage customers to call 216-268-2990 for detailed quotes
-- Emphasize our 30+ years of experience and quality craftsmanship
-- Always offer to connect them with our team for personalized service
-- If you don't know something specific, direct them to call for expert guidance"""
+        # Model configurations
+        self.models = {
+            ModelTier.FAST: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 15, 200),
+            ModelTier.MEDIUM: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 25, 400),
+            ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 35, 600),
+            ModelTier.EXPERT: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 45, 800)
+        }
 
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        """Async context manager entry"""
+        connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
+        timeout = aiohttp.ClientTimeout(total=60, connect=10)
+        self.session = aiohttp.ClientSession(connector=connector, timeout=timeout)
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit"""
         if self.session:
             await self.session.close()
-    
+
+    async def chat(self, question: str, session_id: str) -> Dict:
+        """Main chat interface"""
+        return await self.generate_response(question)
+
     async def generate_response(self, question: str, tier: ModelTier = None) -> Dict:
-        """Generate response using appropriate model tier"""
-        if not tier:
-            tier = QuestionClassifier.classify_question(question)
-        
-        config = MODEL_CONFIGS[tier]
+        """Generate response using Ollama with intelligent model routing"""
         start_time = time.time()
         
         try:
+            # Classify question if tier not specified
+            if tier is None:
+                tier = self.classifier.classify_question(question)
+            
+            config = self.models.get(tier, self.models[ModelTier.FAST])
+            
+            # Generate response
             response = await self._call_ollama(question, config)
             response_time = time.time() - start_time
             
             return {
                 "response": response,
-                "model_used": config.name,
+                "model_used": config.model_name,
                 "tier": tier.name,
                 "response_time": round(response_time, 2),
                 "success": True
             }
             
-        except (asyncio.TimeoutError, aiohttp.ClientError):
-            # Fallback to faster model if timeout
-            if tier != ModelTier.FAST:
-                return await self.generate_response(question, ModelTier.FAST)
-            else:
-                return self._fallback_response(question)
         except Exception as e:
+            # Simplified exception handling - catch everything
             print(f"❌ LLaMA Error: {e}")
             return self._error_response(str(e))
-    
+
     async def _call_ollama(self, question: str, config: ModelConfig) -> str:
         """Make API call to Ollama"""
-        print(f"🔄 Calling Ollama with model: {config.name}")
-        payload = {
-            "model": config.name,
-            "messages": [
-                {"role": "system", "content": self.system_context},
-                {"role": "user", "content": question}
-            ],
-            "options": {
-                "temperature": config.temperature,
-                "num_predict": config.max_tokens
-            },
-            "stream": False
-        }
-        
+        if not self.session:
+            raise Exception("Session not initialized")
+            
         try:
-            timeout = aiohttp.ClientError(total=config.timeout)
-            print(f"🔗 Connecting to {self.base_url}/api/chat with timeout {config.timeout}s")
-
+            # Create LZ Custom context
+            lz_context = """You are a helpful customer service representative for LZ Custom Fabrication, 
+            a premier custom cabinet and stone fabrication company in Northeast Ohio with 30+ years of experience. 
+            We specialize in custom cabinets, countertops (granite, quartz, marble), tile installation, 
+            flooring, and commercial painting. We do in-house manufacturing and don't outsource. 
+            Our phone number is 216-268-2990. Always be helpful and encourage customers to call for quotes."""
+            
+            payload = {
+                "model": config.model_name,
+                "prompt": f"{lz_context}\n\nCustomer question: {question}\n\nResponse:",
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "top_p": 0.9,
+                    "max_tokens": config.max_tokens
+                }
+            }
+            
+            # Create timeout for this specific request
+            timeout = aiohttp.ClientTimeout(total=config.timeout)
+            
             async with self.session.post(
-                f"{self.base_url}/api/chat",
+                f"{self.base_url}/api/generate",
                 json=payload,
                 timeout=timeout
             ) as response:
-                print(f"📡 Ollama response status: {response.status}")
                 if response.status == 200:
                     data = await response.json()
-                    content = data["message"]["content"].strip()
-                    print(f"✅ Ollama response: {content[:100]}...")
-                    return content
+                    content = data.get('response', '').strip()
+                    
+                    if content:
+                        print(f"✅ Ollama response: {content[:100]}...")
+                        return content
+                    else:
+                        raise Exception("Empty response from Ollama")
                 else:
                     error_text = await response.text()
                     print(f"❌ Ollama API error {response.status}: {error_text}")
                     raise Exception(f"Ollama API error: {response.status}")
-        except aiohttp.ClientError as e:
-            print(f"⏰ Ollama timeout: {e}")
-            raise Exception(f"Ollama timeout: {e}")
+                    
+        except asyncio.TimeoutError:
+            print(f"⏰ Ollama timeout after {config.timeout}s")
+            raise Exception(f"Ollama timeout: {config.timeout}s")
         except aiohttp.ClientError as e:
             print(f"🔌 Ollama connection error: {e}")
             raise Exception(f"Ollama connection error: {e}")

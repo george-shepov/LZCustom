@@ -1,53 +1,13 @@
-<<<<<<< HEAD
 services:
-  # LZ Custom Frontend - Professional Fabrication Website
-=======
-version: '3.8'
-
-services:
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./nginx/logs:/var/log/nginx
-      - /var/www/html:/var/www/html
-    depends_on:
-      - lzcustom-frontend
-      - lzcustom-backend
-      - giorgiy-site
-      - giorgiy-shepov-site
-      - lodex-site
-      - bravoohio-site
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # LZ Custom - Main Professional Website
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   lzcustom-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: lzcustom-frontend
-<<<<<<< HEAD
     ports:
       - "3000:5173"
     volumes:
       - ./frontend/public/assets:/app/public/assets
-=======
-    expose:
-      - "5173"
-    volumes:
-      - ./frontend/public/assets:/app/public/assets
-      - ./backups/lzcustom-frontend:/app/backups
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     environment:
       - NODE_ENV=production
       - VITE_API_URL=http://lzcustom-backend:8000
@@ -55,27 +15,15 @@ services:
     networks:
       - web-network
 
-<<<<<<< HEAD
-  # LZ Custom Backend - API and AI Services
-=======
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   lzcustom-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: lzcustom-backend
-<<<<<<< HEAD
     ports:
       - "8001:8000"
     volumes:
       - ./database:/app/database
-=======
-    expose:
-      - "8000"
-    volumes:
-      - ./database:/app/database
-      - ./backups/lzcustom-backend:/app/backups
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     environment:
       - PYTHONPATH=/app
       - DATABASE_PATH=/app/database/lz_custom.db
@@ -86,29 +34,17 @@ services:
     networks:
       - web-network
 
-<<<<<<< HEAD
-  # Ollama - Local LLM Service
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
     ports:
       - "11435:11434"
-=======
-  # Ollama for LLM functionality
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    expose:
-      - "11434"
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped
     networks:
       - web-network
 
-<<<<<<< HEAD
-  # Nginx - Reverse Proxy and SSL Termination
   nginx:
     image: nginx:alpine
     container_name: nginx-proxy
@@ -122,191 +58,11 @@ services:
     depends_on:
       - lzcustom-frontend
       - lzcustom-backend
-=======
-  # Giorgiy.org - Main Landing
-  giorgiy-site:
-    image: nginx:alpine
-    container_name: giorgiy-site
-    expose:
-      - "80"
-    volumes:
-      - ./sites/giorgiy.org:/usr/share/nginx/html
-      - ./backups/giorgiy-site:/backups
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Giorgiy-Shepov.com - Personal Site with WordPress
-  giorgiy-shepov-site:
-    image: wordpress:latest
-    container_name: giorgiy-shepov-site
-    expose:
-      - "80"
-    volumes:
-      - wordpress-data:/var/www/html
-      - ./backups/wordpress:/backups
-    environment:
-      - WORDPRESS_DB_HOST=mysql-db
-      - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_PASSWORD=wordpress_password
-      - WORDPRESS_DB_NAME=giorgiy_shepov_db
-    depends_on:
-      - mysql-db
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Lodex Inc
-  lodex-site:
-    image: nginx:alpine
-    container_name: lodex-site
-    expose:
-      - "80"
-    volumes:
-      - ./sites/lodexinc.com:/usr/share/nginx/html
-      - ./backups/lodex-site:/backups
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Bravo Ohio (corrected domain)
-  bravoohio-site:
-    image: ghost:latest
-    container_name: bravoohio-site
-    expose:
-      - "2368"
-    volumes:
-      - ghost-data:/var/lib/ghost/content
-      - ./backups/ghost:/backups
-    environment:
-      - NODE_ENV=production
-      - url=https://bravoohio.org
-      - database__client=mysql
-      - database__connection__host=mysql-db
-      - database__connection__user=ghost
-      - database__connection__password=ghost_password
-      - database__connection__database=bravoohio_db
-    depends_on:
-      - mysql-db
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # MySQL Database for WordPress and Ghost
-  mysql-db:
-    image: mysql:8.0
-    container_name: mysql-db
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./backups/mysql:/backups
-    environment:
-      - MYSQL_ROOT_PASSWORD=root_password_secure
-      - MYSQL_DATABASE=giorgiy_shepov_db
-      - MYSQL_USER=wordpress
-      - MYSQL_PASSWORD=wordpress_password
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Mail Server
-  mailserver:
-    image: ghcr.io/docker-mailserver/docker-mailserver:latest
-    container_name: mailserver
-    hostname: mail.giorgiy.org
-    env_file: mailserver.env
-    ports:
-      - "25:25"
-      - "143:143"
-      - "465:465"
-      - "587:587"
-      - "993:993"
-    volumes:
-      - ./docker-data/dms/mail-data/:/var/mail/
-      - ./docker-data/dms/mail-state/:/var/mail-state/
-      - ./docker-data/dms/config/:/tmp/docker-mailserver/
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./backups/mail:/backups
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Roundcube Webmail
-  roundcube:
-    image: roundcube/roundcubemail:latest
-    container_name: roundcube
-    expose:
-      - "80"
-    environment:
-      - ROUNDCUBEMAIL_DB_TYPE=mysql
-      - ROUNDCUBEMAIL_DB_HOST=mysql-db
-      - ROUNDCUBEMAIL_DB_USER=roundcube
-      - ROUNDCUBEMAIL_DB_PASSWORD=roundcube_password
-      - ROUNDCUBEMAIL_DB_NAME=roundcube_db
-      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mailserver
-      - ROUNDCUBEMAIL_SMTP_SERVER=tls://mailserver
-    volumes:
-      - roundcube-data:/var/www/html
-      - ./backups/roundcube:/backups
-    depends_on:
-      - mysql-db
-      - mailserver
-    restart: unless-stopped
-    networks:
-      - web-network
-
-  # Backup Service
-  backup-service:
-    image: alpine:latest
-    container_name: backup-service
-    volumes:
-      - ./backups:/backups
-      - mysql-data:/source/mysql:ro
-      - wordpress-data:/source/wordpress:ro
-      - ghost-data:/source/ghost:ro
-      - roundcube-data:/source/roundcube:ro
-      - ./LZCustom:/source/lzcustom:ro
-      - /etc/letsencrypt:/source/ssl:ro
-    command: |
-      sh -c "
-        apk add --no-cache rsync tar gzip mysql-client &&
-        while true; do
-          echo 'Starting backup at $(date)'
-          
-          # Create timestamped backup directory
-          BACKUP_DIR=/backups/$(date +%Y%m%d_%H%M%S)
-          mkdir -p $$BACKUP_DIR
-          
-          # Backup databases
-          mysqldump -h mysql-db -u root -proot_password_secure --all-databases > $$BACKUP_DIR/all_databases.sql
-          
-          # Backup volumes
-          tar -czf $$BACKUP_DIR/mysql_data.tar.gz -C /source/mysql .
-          tar -czf $$BACKUP_DIR/wordpress_data.tar.gz -C /source/wordpress .
-          tar -czf $$BACKUP_DIR/ghost_data.tar.gz -C /source/ghost .
-          tar -czf $$BACKUP_DIR/lzcustom_data.tar.gz -C /source/lzcustom .
-          tar -czf $$BACKUP_DIR/ssl_certs.tar.gz -C /source/ssl .
-          
-          # Keep only last 7 days of backups
-          find /backups -type d -name '20*' -mtime +7 -exec rm -rf {} +
-          
-          echo 'Backup completed at $(date)'
-          sleep 86400  # Wait 24 hours
-        done
-      "
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
     restart: unless-stopped
     networks:
       - web-network
 
 volumes:
-<<<<<<< HEAD
-=======
-  mysql-data:
-  wordpress-data:
-  ghost-data:
-  roundcube-data:
->>>>>>> 4d7235ba580355678b3f9516e87ccb47a1d85199
   ollama-data:
 
 networks:
