@@ -88,8 +88,9 @@ class QuestionClassifier:
 class LLaMAService:
     """Service for interacting with local LLaMA models via Ollama"""
     
-    def __init__(self, base_url: str = "http://localhost:11434"):
-        self.base_url = base_url
+    def __init__(self, base_url: str = None):
+        # Use environment variable or default
+        self.base_url = base_url or os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
         self.session = None
         
         # LZ Custom context for all models

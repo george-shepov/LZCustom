@@ -1,6 +1,34 @@
-# 🏗️ LZ Custom Fabrication - Premium Website with AI Assistant
+# 🏗️ LZ Custom Multi-Domain Platform
 
-A sophisticated, production-ready website for LZ Custom Fabrication, Northeast Ohio's premier custom cabinet and stone fabrication company with 30+ years of excellence. Features working AI chat assistant, professional Midjourney-generated gallery, comprehensive database logging, and automated Ubuntu deployment.
+A comprehensive multi-domain platform featuring LZ Custom Fabrication as the flagship business website, plus personal sites and professional services. Built with Docker, automated backups, SSL certificates, and AI-powered features.
+
+## 🌐 Live Domains
+
+- **https://lzcustom.giorgiy.org** - LZ Custom Professional Fabrication (Main)
+- **https://lzcustom.bravoohio.org** - LZ Custom (Bravo Ohio subdomain)
+- **https://lzcustom.lodexinc.com** - LZ Custom (Lodex Inc subdomain)
+- **https://giorgiy.org** - Main landing page
+- **https://giorgiy-shepov.com** - Personal WordPress site
+- **https://lodexinc.com** - Lodex Inc technology solutions
+- **https://bravoohio.org** - Bravo Ohio community initiative (Ghost CMS)
+- **https://mail.giorgiy.org** - Professional webmail for all domains
+
+## 🐳 Docker Management
+
+### Quick Start
+```bash
+./manage.sh start     # Start all services
+./manage.sh ssl       # Get SSL certificates
+./manage.sh status    # Check everything is running
+```
+
+### Daily Operations
+```bash
+./manage.sh stop      # Stop all services (with backup)
+./manage.sh restart   # Restart all services
+./manage.sh backup    # Create manual backup
+./manage.sh logs lzcustom-frontend  # View specific logs
+```
 
 ## 🎯 Key Features
 

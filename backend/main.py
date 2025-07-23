@@ -192,14 +192,33 @@ llama_service = None
 async def startup_event():
     global llama_service
     init_db()
-    # Initialize LLaMA service
-    try:
-        llama_service = LLaMAService()
-        await llama_service.__aenter__()
-        print("✅ LLaMA service initialized successfully")
-    except Exception as e:
-        print(f"⚠️  LLaMA service initialization failed: {e}")
-        llama_service = None
+    # Initialize LLaMA service with retry logic
+    max_retries = 3
+    retry_delay = 5
+
+    for attempt in range(max_retries):
+        try:
+            print(f"🔄 Attempting to initialize LLaMA service (attempt {attempt + 1}/{max_retries})...")
+            llama_service = LLaMAService()
+            await llama_service.__aenter__()
+
+            # Test the service with a simple query
+            test_response = await llama_service.chat("Hello", "test-session")
+            if test_response and test_response.get('response'):
+                print("✅ LLaMA service initialized and tested successfully")
+                break
+            else:
+                raise Exception("Service initialized but test query failed")
+
+        except Exception as e:
+            print(f"⚠️  LLaMA service initialization attempt {attempt + 1} failed: {e}")
+            if attempt < max_retries - 1:
+                print(f"🔄 Retrying in {retry_delay} seconds...")
+                await asyncio.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff
+            else:
+                print("❌ LLaMA service initialization failed after all attempts")
+                llama_service = None
 
 @app.on_event("shutdown")
 async def shutdown_event():
