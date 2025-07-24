@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Domain Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .domain-test { border: 1px solid #ddd; margin: 10px 0; padding: 15px; }
+        .result { margin: 5px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <h1>Multi-Domain LZCustom Test</h1>
+    
+    <div class="domain-test">
+        <h2>Current Domain Detection</h2>
+        <div class="result">
+            <strong>Current URL:</strong> <span id="currentUrl"></span>
+        </div>
+        <div class="result">
+            <strong>Domain Brand:</strong> <span id="domainBrand"></span>
+        </div>
+        <div class="result">
+            <strong>Company Name:</strong> <span id="companyName"></span>
+        </div>
+    </div>
+
+    <div class="domain-test">
+        <h2>API Tests</h2>
+        <button onclick="testChatAPI()">Test Chat API</button>
+        <button onclick="testProspectsAPI()">Test Prospects API</button>
+        <div id="apiResults"></div>
+    </div>
+
+    <script>
+        // Domain detection logic (same as in Vue app)
+        const domainConfigs = {
+            'giorgiy.org': {
+                companyName: 'LZ Custom Fabrication',
+                tagline: 'Premier Custom Cabinet & Stone Fabrication'
+            },
+            'giorgiy-shepov.com': {
+                companyName: 'Giorgiy Shepov Consulting',
+                tagline: 'Business Development & Technical Solutions'
+            },
+            'bravoohio.org': {
+                companyName: 'Bravo Ohio Business Consulting',
+                tagline: 'Strategic Business Growth Solutions'
+            },
+            'lodexinc.com': {
+                companyName: 'Lodex Inc',
+                tagline: 'Corporate Development & Strategy'
+            }
+        };
+
+        function getDomainBrand() {
+            const hostname = window.location.hostname.replace('www.', '');
+            return {
+                'giorgiy.org': 'giorgiy',
+                'giorgiy-shepov.com': 'giorgiy-shepov',
+                'bravoohio.org': 'bravoohio',
+                'lodexinc.com': 'lodexinc'
+            }[hostname] || 'giorgiy';
+        }
+
+        function getBrandConfig() {
+            const hostname = window.location.hostname.replace('www.', '');
+            return domainConfigs[hostname] || domainConfigs['giorgiy.org'];
+        }
+
+        // Initialize display
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('domainBrand').textContent = getDomainBrand();
+        document.getElementById('companyName').textContent = getBrandConfig().companyName;
+
+        async function testChatAPI() {
+            const results = document.getElementById('apiResults');
+            results.innerHTML = '<div>Testing Chat API...</div>';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Test message from ' + getBrandConfig().companyName
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    results.innerHTML += '<div class="success">✅ Chat API: SUCCESS</div>';
+                    results.innerHTML += '<div>Response: ' + (data.response || JSON.stringify(data)).substring(0, 100) + '...</div>';
+                } else {
+                    results.innerHTML += '<div class="error">❌ Chat API: Failed with status ' + response.status + '</div>';
+                }
+            } catch (error) {
+                results.innerHTML += '<div class="error">❌ Chat API: Error - ' + error.message + '</div>';
+            }
+        }
+
+        async function testProspectsAPI() {
+            const results = document.getElementById('apiResults');
+            results.innerHTML += '<div>Testing Prospects API...</div>';
+            
+            try {
+                const response = await fetch('/api/prospects', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        phone: '216-555-0123',
+                        project: 'Test Project from ' + getBrandConfig().companyName,
+                        message: 'This is a test submission'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    results.innerHTML += '<div class="success">✅ Prospects API: SUCCESS</div>';
+                    results.innerHTML += '<div>Response: ' + JSON.stringify(data) + '</div>';
+                } else {
+                    results.innerHTML += '<div class="error">❌ Prospects API: Failed with status ' + response.status + '</div>';
+                }
+            } catch (error) {
+                results.innerHTML += '<div class="error">❌ Prospects API: Error - ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="`theme-${getDomainBrand()}`">
     <Navigation />
     <HeroSection />
     <ServicesGrid />
@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import { provide } from 'vue'
 import Navigation from './components/Navigation.vue'
 import HeroSection from './components/HeroSection.vue'
 import ServicesGrid from './components/ServicesGrid.vue'
@@ -22,6 +23,12 @@ import Testimonials from './components/Testimonials.vue'
 import QuoteForm from './components/QuoteForm.vue'
 import Footer from './components/Footer.vue'
 import CustomerServiceChat from './components/CustomerServiceChat.vue'
+import { useDomainBranding } from './composables/useDomainBranding'
+
+const { brandConfig, getDomainBrand } = useDomainBranding()
+
+// Provide brand config to all child components
+provide('brandConfig', brandConfig)
 </script>
 
 <style>
@@ -118,6 +125,31 @@ html {
 /* Utility classes */
 .text-center {
   text-align: center;
+}
+
+/* Domain-specific themes */
+.theme-giorgiy {
+  --primary-color: #2c5282;
+  --secondary-color: #4a5568;
+  --accent-color: #3182ce;
+}
+
+.theme-giorgiy-shepov {
+  --primary-color: #1a202c;
+  --secondary-color: #2d3748;
+  --accent-color: #ecc94b;
+}
+
+.theme-bravoohio {
+  --primary-color: #c53030;
+  --secondary-color: #2b6cb0;
+  --accent-color: #ed8936;
+}
+
+.theme-lodexinc {
+  --primary-color: #2d3748;
+  --secondary-color: #4a5568;
+  --accent-color: #718096;
 }
 
 .text-left {

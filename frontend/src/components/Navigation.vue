@@ -3,19 +3,19 @@
     <div class="nav-container">
       <div class="nav-logo">
         <h1>
-          <span class="logo-lz">LZ</span>
-          <span class="logo-custom">Custom</span>
+          <span class="logo-primary">{{ brandConfig.companyName.split(' ')[0] }}</span>
+          <span class="logo-secondary">{{ brandConfig.companyName.split(' ').slice(1).join(' ') }}</span>
         </h1>
-        <span class="logo-fabrication">Fabrication</span>
+        <span class="logo-tagline">{{ brandConfig.tagline }}</span>
       </div>
 
       <div class="nav-links" :class="{ 'active': mobileMenuOpen }">
         <a href="#services" @click="scrollToSection('services')">Services</a>
         <a href="#gallery-preview" @click="scrollToSection('gallery-preview')">Portfolio</a>
         <a href="#quote-form" @click="scrollToSection('quote-form')">Get Quote</a>
-        <a href="tel:216-268-2990" class="nav-phone">
+        <a :href="`tel:${brandConfig.phone}`" class="nav-phone">
           <i class="fas fa-phone"></i>
-          216-268-2990
+          {{ brandConfig.phone }}
         </a>
       </div>
 
@@ -35,7 +35,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, inject } from 'vue'
+
+const brandConfig = inject('brandConfig')
 
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
@@ -103,20 +105,20 @@ onUnmounted(() => {
   gap: 0.3rem;
 }
 
-.logo-lz {
+.logo-primary {
   font-size: 1.3em;
   font-weight: 900;
-  color: #f39c12;
+  color: var(--accent-color, #f39c12);
 }
 
-.logo-custom {
+.logo-secondary {
   font-weight: 400;
-  color: #2c3e50;
+  color: var(--primary-color, #2c3e50);
 }
 
-.logo-fabrication {
+.logo-tagline {
   font-size: 0.9rem;
-  color: #f39c12;
+  color: var(--accent-color, #f39c12);
   font-weight: 500;
   margin-left: 0.5rem;
 }

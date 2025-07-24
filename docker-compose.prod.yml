@@ -16,7 +16,6 @@ services:
       - ./frontend/public/assets:/app/public/assets:ro
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://lzcustom-backend:8000
     networks:
       - web-network
     depends_on:
