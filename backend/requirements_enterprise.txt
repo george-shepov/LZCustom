@@ -1,0 +1,57 @@
+# Enterprise Backend Dependencies for LZCustom Platform
+# Multi-database support: PostgreSQL, Redis, MongoDB, Qdrant
+
+# Core FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Database drivers and ORMs
+asyncpg==0.29.0              # PostgreSQL async driver
+redis[hiredis]==5.0.1        # Redis with optimized parser
+motor==3.3.2                 # MongoDB async driver
+qdrant-client==1.7.0         # Vector database client
+
+# HTTP and networking
+aiohttp==3.9.1
+httpx==0.25.2
+websockets==12.0
+
+# Security and authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# Data processing and validation
+python-dateutil==2.8.2
+email-validator==2.1.0.post1
+
+# Email and notifications
+aiosmtplib==3.0.1
+
+# Background tasks and caching
+celery[redis]==5.3.4
+python-json-logger==2.0.7
+
+# Monitoring and observability
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-asyncpg==0.42b0
+opentelemetry-instrumentation-redis==0.42b0
+
+# AI/ML and embeddings
+numpy==1.24.4
+sentence-transformers==2.2.2
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+isort==5.12.0
+mypy==1.7.1
+
+# Existing LLaMA service dependencies (from original requirements.txt)
+# Note: These should match your existing llama_service.py implementation

@@ -1,0 +1,274 @@
+# CMS Platform Stack for LZCustom Enterprise
+# Ghost for blogging + Custom portfolio platform + Subdomain routing
+
+version: '3.8'
+
+services:
+  # Ghost Blog for bravoohio.org
+  ghost-bravoohio:
+    image: ghost:5-alpine
+    container_name: ghost-bravoohio
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - GHOST_INSTALL=/var/lib/ghost
+      - GHOST_CONTENT=/var/lib/ghost/content
+      - url=https://bravoohio.org
+      - database__client=mysql
+      - database__connection__host=mysql-cms
+      - database__connection__user=ghost_bravo
+      - database__connection__password=ghost_bravo_password
+      - database__connection__database=ghost_bravoohio
+      - mail__transport=SMTP
+      - mail__options__service=Mailgun
+      - mail__options__host=smtp.mailgun.org
+      - mail__options__port=587
+      - mail__options__auth__user=${MAILGUN_USER}
+      - mail__options__auth__pass=${MAILGUN_PASS}
+      - mail__from=noreply@bravoohio.org
+    volumes:
+      - ghost-bravo-content:/var/lib/ghost/content
+      - ./cms/ghost/bravoohio/config.production.json:/var/lib/ghost/config.production.json:ro
+    networks:
+      - cms-network
+      - web-network
+    depends_on:
+      mysql-cms:
+        condition: service_healthy
+
+  # Ghost Blog for giorgiy.org  
+  ghost-giorgiy:
+    image: ghost:5-alpine
+    container_name: ghost-giorgiy
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - GHOST_INSTALL=/var/lib/ghost
+      - GHOST_CONTENT=/var/lib/ghost/content
+      - url=https://giorgiy.org
+      - database__client=mysql
+      - database__connection__host=mysql-cms
+      - database__connection__user=ghost_giorgiy
+      - database__connection__password=ghost_giorgiy_password
+      - database__connection__database=ghost_giorgiy
+      - mail__transport=SMTP
+      - mail__options__service=Mailgun
+      - mail__options__host=smtp.mailgun.org
+      - mail__options__port=587
+      - mail__options__auth__user=${MAILGUN_USER}
+      - mail__options__auth__pass=${MAILGUN_PASS}
+      - mail__from=noreply@giorgiy.org
+    volumes:
+      - ghost-giorgiy-content:/var/lib/ghost/content
+      - ./cms/ghost/giorgiy/config.production.json:/var/lib/ghost/config.production.json:ro
+    networks:
+      - cms-network
+      - web-network
+    depends_on:
+      mysql-cms:
+        condition: service_healthy
+
+  # MySQL Database for Ghost instances
+  mysql-cms:
+    image: mysql:8.0
+    container_name: mysql-cms
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=cms_root_password
+      - MYSQL_DATABASE=ghost_master
+    volumes:
+      - mysql-cms-data:/var/lib/mysql
+      - ./cms/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - cms-network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Portfolio Platform for giorgiy-shepov.com (Next.js)
+  portfolio-platform:
+    build:
+      context: ./cms/portfolio
+      dockerfile: Dockerfile
+    container_name: portfolio-giorgiy-shepov
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SITE_URL=https://giorgiy-shepov.com
+      - DATABASE_URL=postgresql://lzcustom:lzcustom_password@postgres:5432/lzcustom_db
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
+      - NEXTAUTH_URL=https://giorgiy-shepov.com
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - MONGODB_URI=mongodb://mongo:27017/portfolio_cms
+    volumes:
+      - ./cms/portfolio:/app
+      - portfolio-uploads:/app/public/uploads
+    networks:
+      - web-network
+      - db-network
+    depends_on:
+      - postgres
+      - mongo
+
+  # LZ Custom Subdomain Applications
+  lzcustom-lodex:
+    build:
+      context: ./subdomains/lzcustom
+      dockerfile: Dockerfile
+    container_name: lzcustom-lodex
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PARENT_DOMAIN=lodexinc.com
+      - SUBDOMAIN=lzcustom
+      - API_BASE_URL=http://lzcustom-backend:8000
+      - DOMAIN_BRAND=giorgiy
+    volumes:
+      - ./subdomains/lzcustom:/app
+    networks:
+      - web-network
+    depends_on:
+      - lzcustom-backend
+
+  lzcustom-giorgiy:
+    build:
+      context: ./subdomains/lzcustom
+      dockerfile: Dockerfile
+    container_name: lzcustom-giorgiy
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PARENT_DOMAIN=giorgiy.org
+      - SUBDOMAIN=lzcustom
+      - API_BASE_URL=http://lzcustom-backend:8000
+      - DOMAIN_BRAND=giorgiy
+    volumes:
+      - ./subdomains/lzcustom:/app
+    networks:
+      - web-network
+    depends_on:
+      - lzcustom-backend
+
+  lzcustom-bravo:
+    build:
+      context: ./subdomains/lzcustom
+      dockerfile: Dockerfile
+    container_name: lzcustom-bravo
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PARENT_DOMAIN=bravoohio.org
+      - SUBDOMAIN=lzcustom
+      - API_BASE_URL=http://lzcustom-backend:8000
+      - DOMAIN_BRAND=giorgiy
+    volumes:
+      - ./subdomains/lzcustom:/app
+    networks:
+      - web-network
+    depends_on:
+      - lzcustom-backend
+
+  # Strapi CMS (Alternative/Backup CMS)
+  strapi-cms:
+    image: strapi/strapi:4.15.1-alpine
+    container_name: strapi-cms
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_CLIENT=postgres
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=strapi_cms
+      - DATABASE_USERNAME=lzcustom
+      - DATABASE_PASSWORD=lzcustom_password
+      - JWT_SECRET=${STRAPI_JWT_SECRET}
+      - ADMIN_JWT_SECRET=${STRAPI_ADMIN_JWT_SECRET}
+      - TRANSFER_TOKEN_SALT=${STRAPI_TRANSFER_TOKEN_SALT}
+      - API_TOKEN_SALT=${STRAPI_API_TOKEN_SALT}
+    volumes:
+      - strapi-data:/opt/app
+      - strapi-uploads:/opt/app/public/uploads
+    ports:
+      - "1337:1337"
+    networks:
+      - cms-network
+      - db-network
+    depends_on:
+      - postgres
+    profiles:
+      - strapi  # Optional service - enable with --profile strapi
+
+  # Redis for CMS caching
+  redis-cms:
+    image: redis:7-alpine
+    container_name: redis-cms
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass cms_cache_password
+    volumes:
+      - redis-cms-data:/data
+    networks:
+      - cms-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Nginx with CMS routing
+  nginx-cms:
+    image: nginx:alpine
+    container_name: nginx-cms
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/cms.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - web-network
+      - cms-network
+    depends_on:
+      - ghost-bravoohio
+      - ghost-giorgiy
+      - portfolio-platform
+      - lzcustom-lodex
+      - lzcustom-giorgiy
+      - lzcustom-bravo
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Volumes for persistent data
+volumes:
+  ghost-bravo-content:
+    driver: local
+  ghost-giorgiy-content:
+    driver: local
+  mysql-cms-data:
+    driver: local
+  portfolio-uploads:
+    driver: local
+  strapi-data:
+    driver: local
+  strapi-uploads:
+    driver: local
+  redis-cms-data:
+    driver: local
+
+# Networks
+networks:
+  cms-network:
+    driver: bridge
+  web-network:
+    external: true
+  db-network:
+    external: true

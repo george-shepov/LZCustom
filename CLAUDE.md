@@ -4,12 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-LZ Custom Fabrication is a Vue.js 3 + FastAPI web application for a custom fabrication company. The application features:
-- Professional company website with services, gallery, and quote forms
+LZCustom is an enterprise multi-domain platform built with Vue.js 3 + FastAPI serving 4 distinct brands:
+- **LZ Custom Fabrication** (giorgiy.org) - Cabinet & stone fabrication
+- **Giorgiy Shepov Consulting** (giorgiy-shepov.com) - Business consulting
+- **Bravo Ohio Business Consulting** (bravoohio.org) - Strategic growth solutions
+- **Lodex Inc** (lodexinc.com) - Corporate development
+
+### Key Features:
+- Multi-database enterprise architecture (PostgreSQL, Redis, MongoDB, Qdrant)
+- Domain-specific branding and separate API endpoints
 - AI-powered customer service chat using local LLaMA models with intelligent model routing
-- Database logging for chat conversations and quote submissions
-- Multi-domain Nginx reverse proxy configuration supporting multiple websites
-- Production deployment with Docker Compose and automated Ubuntu provisioning scripts
+- Redis-based session management and caching
+- MongoDB document storage for CMS functionality
+- Vector database for AI embeddings and semantic search
+- Comprehensive monitoring and analytics
+- Multi-domain Nginx reverse proxy configuration
+- Production deployment with Docker Compose
 
 ## Development Commands
 
@@ -46,10 +56,23 @@ ollama pull gemma3:4b                    # Medium complexity questions
 ollama pull llama3.2:3b                  # Fast responses, simple questions
 ```
 
-### Production Deployment
+### Enterprise Deployment (Recommended)
+```bash
+./deploy-enterprise.sh          # Full enterprise stack with all databases
+docker-compose -f docker-compose.enterprise.yml up -d  # Manual enterprise deployment
+```
+
+### Legacy Deployment
 ```bash
 ./scripts/provision-ubuntu.sh   # Full production Ubuntu deployment
-docker-compose up --build       # Docker container deployment
+docker-compose up --build       # Simple Docker container deployment
+```
+
+### Enterprise Backend (PostgreSQL + Redis + MongoDB + Qdrant)
+```bash
+cd backend
+pip install -r requirements_enterprise.txt  # Install enterprise dependencies
+python main_enterprise.py                   # Start enterprise backend server
 ```
 
 ## Architecture
@@ -121,19 +144,52 @@ sessions: id, session_id, user_ip, created_at, last_activity
 ```
 
 ### Manual API Testing
+
+#### Enterprise API (Domain-Specific Endpoints)
 ```bash
-# Test AI chat with complexity routing
-curl -X POST http://localhost:8000/api/chat \
+# Test LZ Custom chat
+curl -X POST http://localhost:8000/api/lz-custom/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "What stone materials do you work with for countertops?"}'
 
-# Test quote submission
-curl -X POST http://localhost:8000/api/prospects \
+# Test LZ Custom prospects
+curl -X POST http://localhost:8000/api/lz-custom/prospects \
   -H "Content-Type: application/json" \
   -d '{"name": "Test User", "email": "test@example.com", "phone": "216-555-0123", "project": "kitchen countertops", "message": "Looking for granite installation"}'
 
-# Test analytics dashboard
-curl http://localhost:8000/api/analytics/dashboard
+# Test GS Consulting chat
+curl -X POST http://localhost:8000/api/gs-consulting/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "I need help with digital transformation for my business"}'
+
+# Test Bravo Ohio prospects
+curl -X POST http://localhost:8000/api/bravo-ohio/prospects \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Business Owner", "email": "owner@company.com", "project": "Market Analysis", "message": "Need growth strategy consultation"}'
+
+# Test Lodex Inc chat
+curl -X POST http://localhost:8000/api/lodex-inc/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What corporate development services do you provide?"}'
+
+# Test enterprise analytics
+curl http://localhost:8000/api/analytics/overview
+
+# Test health check (all databases)
+curl http://localhost:8000/api/health
+```
+
+#### Legacy API (Unified Endpoints)
+```bash
+# Test unified chat (auto-detects domain)
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What services do you offer?"}'
+
+# Test unified prospects (auto-detects domain)  
+curl -X POST http://localhost:8000/api/prospects \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test User", "email": "test@example.com", "phone": "216-555-0123", "project": "general inquiry"}'
 ```
 
 ### Debugging Chat Issues

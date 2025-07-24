@@ -1,0 +1,52 @@
+{
+  "url": "https://giorgiy.org",
+  "server": {
+    "port": 2368,
+    "host": "0.0.0.0"
+  },
+  "database": {
+    "client": "mysql",
+    "connection": {
+      "host": "mysql-cms",
+      "user": "ghost_giorgiy", 
+      "password": "ghost_giorgiy_password",
+      "database": "ghost_giorgiy"
+    }
+  },
+  "mail": {
+    "transport": "SMTP",
+    "from": "Giorgiy Shepov <noreply@giorgiy.org>",
+    "options": {
+      "service": "Mailgun",
+      "host": "smtp.mailgun.org", 
+      "port": 587,
+      "auth": {
+        "user": "postmaster@mg.giorgiy.org",
+        "pass": "your-mailgun-password"
+      }
+    }
+  },
+  "logging": {
+    "transports": ["stdout"]
+  },
+  "process": "systemd",
+  "paths": {
+    "contentPath": "/var/lib/ghost/content"
+  },
+  "privacy": {
+    "useUpdateCheck": false
+  },
+  "useMinFiles": true,
+  "caching": {
+    "frontend": {
+      "maxAge": 600
+    },
+    "301": {
+      "maxAge": 31536000
+    }
+  },
+  "imageOptimization": {
+    "resize": true,
+    "srcsets": true
+  }
+}
