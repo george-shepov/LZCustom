@@ -1,25 +1,229 @@
+# Production Docker Compose Configuration for Multi-Domain LZCustom Setup
+# Supports: giorgiy.org, giorgiy-shepov.com, bravoohio.org, lodexinc.com
+# Features: SSL termination, email server, AI chat, domain-specific branding
+
 version: '3.8'
 
 services:
-  # Main Web Application
-  web:
-    build: .
-    ports:
-      - "80:8000"
-    volumes:
-      - ./static:/app/static
-      - ./uploads:/app/uploads
-      - ./database:/app/database
-    environment:
-      - FLASK_ENV=production
-      - AI_ENABLED=true
-      - AI_MODEL=deepseek
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OLLAMA_ENDPOINT=http://localhost:11434
-      - DATABASE_URL=sqlite:///database/lz_custom.db
-      - SECRET_KEY=${SECRET_KEY}
+  # Vue.js Frontend
+  lzcustom-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lzcustom-frontend
     restart: unless-stopped
-    network_mode: host
+    volumes:
+      - ./frontend/public/assets:/app/public/assets:ro
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://lzcustom-backend:8000
+    networks:
+      - web-network
+    depends_on:
+      - lzcustom-backend
 
-# Using host Ollama - no volumes needed
+  # FastAPI Backend
+  lzcustom-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lzcustom-backend
+    restart: unless-stopped
+    volumes:
+      - ./backend/lz_custom.db:/app/lz_custom.db
+      - ./backend:/app
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_PATH=/app/lz_custom.db
+      - OLLAMA_HOST=http://ollama:11434
+      - SMTP_SERVER=mailserver
+      - SMTP_PORT=587
+      - SMTP_USERNAME=noreply@giorgiy.org
+      - FROM_EMAIL=noreply@giorgiy.org
+      - TO_EMAIL=george@giorgiy.org
+    networks:
+      - web-network
+      - mail-network
+    depends_on:
+      - ollama
+      - mailserver
+
+  # Ollama AI Model Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0:11434
+    networks:
+      - web-network
+    # Auto-pull required models on startup
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy with SSL
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/html:/var/www/html:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - web-network
+    depends_on:
+      - lzcustom-frontend
+      - lzcustom-backend
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Mail Server (Postfix + Dovecot)
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    hostname: mail.giorgiy.org
+    restart: unless-stopped
+    ports:
+      - "25:25"     # SMTP
+      - "143:143"   # IMAP
+      - "465:465"   # SMTPS
+      - "587:587"   # Submission
+      - "993:993"   # IMAPS
+    volumes:
+      - ./docker-data/dms/mail-data/:/var/mail/
+      - ./docker-data/dms/mail-state/:/var/mail-state/
+      - ./docker-data/dms/mail-logs/:/var/log/mail/
+      - ./docker-data/dms/config/:/tmp/docker-mailserver/
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - OVERRIDE_HOSTNAME=mail.giorgiy.org
+      - DOMAINNAME=giorgiy.org
+      - POSTMASTER_ADDRESS=postmaster@giorgiy.org
+      - PERMITTED_SENDER_DOMAINS=giorgiy.org,giorgiy-shepov.com,bravoohio.org,lodexinc.com
+      - SSL_TYPE=letsencrypt
+      - SSL_CERT_PATH=/etc/letsencrypt/live/giorgiy.org/fullchain.pem
+      - SSL_KEY_PATH=/etc/letsencrypt/live/giorgiy.org/privkey.pem
+      - ENABLE_SPAMASSASSIN=1
+      - ENABLE_CLAMAV=1
+      - ENABLE_FAIL2BAN=1
+      - ENABLE_POSTGREY=1
+      - ENABLE_AMAVIS=1
+      - ENABLE_OPENDKIM=1
+      - ENABLE_OPENDMARC=1
+      - ENABLE_POLICYD_SPF=1
+      - LOG_LEVEL=info
+      - TZ=America/New_York
+    networks:
+      - mail-network
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.mail.unix.max_dgram_qlen=50
+    healthcheck:
+      test: "ss -lntp | grep -E ':25|:143|:465|:587|:993' || exit 1"
+      timeout: 45s
+      interval: 30s
+      retries: 3
+      start_period: 90s
+
+  # Roundcube Webmail
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    container_name: roundcube
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=mysql
+      - ROUNDCUBEMAIL_DB_HOST=roundcube-db
+      - ROUNDCUBEMAIL_DB_USER=roundcube
+      - ROUNDCUBEMAIL_DB_PASSWORD=roundcube_password
+      - ROUNDCUBEMAIL_DB_NAME=roundcube
+      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mailserver
+      - ROUNDCUBEMAIL_DEFAULT_PORT=993
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://mailserver
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+    volumes:
+      - roundcube-data:/var/www/html
+    networks:
+      - mail-network
+    depends_on:
+      - mailserver
+      - roundcube-db
+
+  # Database for Roundcube
+  roundcube-db:
+    image: mysql:8.0
+    container_name: roundcube-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=roundcube
+      - MYSQL_USER=roundcube
+      - MYSQL_PASSWORD=roundcube_password
+    volumes:
+      - roundcube-db-data:/var/lib/mysql
+    networks:
+      - mail-network
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: mail-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - mail-network
+
+  # Fail2Ban for security
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    container_name: fail2ban
+    restart: unless-stopped
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./docker-data/fail2ban:/data
+      - /var/log:/var/log:ro
+    environment:
+      - TZ=America/New_York
+      - F2B_LOG_LEVEL=INFO
+      - F2B_DB_PURGE_AGE=30d
+
+# Persistent volumes
+volumes:
+  ollama-data:
+    driver: local
+  roundcube-data:
+    driver: local
+  roundcube-db-data:
+    driver: local
+  redis-data:
+    driver: local
+
+# Networks
+networks:
+  web-network:
+    driver: bridge
+  mail-network:
+    driver: bridge

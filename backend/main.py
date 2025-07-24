@@ -9,7 +9,152 @@ from datetime import datetime
 import uvicorn
 import asyncio
 import uuid
+import smtplib
+import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from llama_service import LLaMAService, QuestionClassifier
+
+# Domain-specific branding configurations
+DOMAIN_CONFIGS = {
+    "giorgiy": {
+        "company_name": "LZ Custom Fabrication",
+        "tagline": "Premier Custom Cabinet & Stone Fabrication",
+        "specialty": "custom cabinets, granite countertops, stone fabrication",
+        "location": "Northeast Ohio",
+        "phone": "216-268-2990",
+        "color_scheme": "professional blue and grey"
+    },
+    "giorgiy-shepov": {
+        "company_name": "Giorgiy Shepov Consulting",
+        "tagline": "Business Development & Technical Solutions",
+        "specialty": "business consulting, technical strategy, digital transformation",
+        "location": "Cleveland, Ohio",
+        "phone": "216-268-2990",
+        "color_scheme": "modern black and gold"
+    },
+    "bravoohio": {
+        "company_name": "Bravo Ohio Business Consulting",
+        "tagline": "Strategic Business Growth Solutions",
+        "specialty": "business consulting, market analysis, operational optimization",
+        "location": "Ohio",
+        "phone": "216-268-2990",
+        "color_scheme": "bold red and blue"
+    },
+    "lodexinc": {
+        "company_name": "Lodex Inc",
+        "tagline": "Corporate Development & Strategy",
+        "specialty": "corporate consulting, business development, strategic planning",
+        "location": "Ohio",
+        "phone": "216-268-2990",
+        "color_scheme": "corporate navy and silver"
+    }
+}
+
+def get_domain_context(domain_brand: str) -> str:
+    """Get domain-specific context for LLM"""
+    config = DOMAIN_CONFIGS.get(domain_brand, DOMAIN_CONFIGS["giorgiy"])
+    
+    return f"""You are a helpful customer service representative for {config['company_name']}, 
+    {config['tagline']}. We specialize in {config['specialty']} and are located in {config['location']} 
+    with 30+ years of experience. Our phone number is {config['phone']}. 
+    Always be helpful and encourage customers to call for quotes and consultations."""
+
+# Email configuration
+EMAIL_CONFIG = {
+    "smtp_server": os.environ.get("SMTP_SERVER", "localhost"),
+    "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
+    "smtp_username": os.environ.get("SMTP_USERNAME", "noreply@giorgiy.org"),
+    "smtp_password": os.environ.get("SMTP_PASSWORD", ""),
+    "from_email": os.environ.get("FROM_EMAIL", "noreply@giorgiy.org"),
+    "to_email": os.environ.get("TO_EMAIL", "george@giorgiy.org")
+}
+
+async def send_email(to_email: str, subject: str, body: str, is_html: bool = False) -> bool:
+    """Send email using SMTP"""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_CONFIG["from_email"]
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        
+        msg.attach(MIMEText(body, 'html' if is_html else 'plain'))
+        
+        # Use local mail server for now (docker mailserver)
+        with smtplib.SMTP(EMAIL_CONFIG["smtp_server"], EMAIL_CONFIG["smtp_port"]) as server:
+            if EMAIL_CONFIG["smtp_password"]:
+                server.starttls()
+                server.login(EMAIL_CONFIG["smtp_username"], EMAIL_CONFIG["smtp_password"])
+            server.send_message(msg)
+        
+        print(f"✅ Email sent successfully to {to_email}")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to send email to {to_email}: {e}")
+        return False
+
+def get_prospect_email_template(prospect_data: dict, domain_brand: str) -> tuple:
+    """Generate email templates for prospect notification"""
+    config = DOMAIN_CONFIGS.get(domain_brand, DOMAIN_CONFIGS["giorgiy"])
+    
+    # Email to business owner
+    owner_subject = f"New Lead from {config['company_name']} Website - {prospect_data['name']}"
+    owner_body = f"""
+    <h2>New Prospect Inquiry</h2>
+    
+    <p><strong>Company:</strong> {config['company_name']}</p>
+    <p><strong>Domain:</strong> {domain_brand}</p>
+    <p><strong>Time:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+    
+    <h3>Contact Information:</h3>
+    <ul>
+        <li><strong>Name:</strong> {prospect_data['name']}</li>
+        <li><strong>Email:</strong> {prospect_data['email']}</li>
+        <li><strong>Phone:</strong> {prospect_data.get('phone', 'Not provided')}</li>
+    </ul>
+    
+    <h3>Project Details:</h3>
+    <ul>
+        <li><strong>Project Type:</strong> {prospect_data.get('project', 'Not specified')}</li>
+        <li><strong>Budget:</strong> {prospect_data.get('budget', 'Not specified')}</li>
+        <li><strong>Timeline:</strong> {prospect_data.get('timeline', 'Not specified')}</li>
+    </ul>
+    
+    <h3>Message:</h3>
+    <p>{prospect_data.get('message', 'No message provided')}</p>
+    
+    <p><em>Follow up with this lead as soon as possible!</em></p>
+    """
+    
+    # Email to prospect (auto-reply)
+    prospect_subject = f"Thank you for contacting {config['company_name']}"
+    prospect_body = f"""
+    <h2>Thank you for your inquiry!</h2>
+    
+    <p>Dear {prospect_data['name']},</p>
+    
+    <p>Thank you for contacting <strong>{config['company_name']}</strong>. We have received your inquiry about {prospect_data.get('project', 'your project')} and will get back to you within 24 hours.</p>
+    
+    <h3>Your submission details:</h3>
+    <ul>
+        <li><strong>Project:</strong> {prospect_data.get('project', 'Not specified')}</li>
+        <li><strong>Budget:</strong> {prospect_data.get('budget', 'Not specified')}</li>
+        <li><strong>Timeline:</strong> {prospect_data.get('timeline', 'Not specified')}</li>
+    </ul>
+    
+    <p>In the meantime, feel free to call us directly at <strong>{config['phone']}</strong> if you have any urgent questions.</p>
+    
+    <p>We specialize in {config['specialty']} and look forward to helping you with your project.</p>
+    
+    <p>Best regards,<br>
+    {config['company_name']} Team<br>
+    {config['phone']}</p>
+    
+    <hr>
+    <p><small>This is an automated response. Please do not reply directly to this email.</small></p>
+    """
+    
+    return (owner_subject, owner_body), (prospect_subject, prospect_body)
 
 app = FastAPI(title="LZ Custom API", version="1.0.0")
 
@@ -281,6 +426,35 @@ async def create_prospect(prospect: ProspectCreate, request: Request):
         # Log successful submission
         print(f"Successfully saved prospect {prospect_id} with priority {priority}")
 
+        # Send email notifications
+        try:
+            domain_brand = request.headers.get("x-domain-brand", "giorgiy")
+            prospect_data = {
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "project": project,
+                "message": message,
+                "budget": prospect.budget,
+                "timeline": prospect.timeline
+            }
+            
+            # Get email templates for this domain
+            (owner_subject, owner_body), (prospect_subject, prospect_body) = get_prospect_email_template(prospect_data, domain_brand)
+            
+            # Send email to business owner
+            owner_email_sent = await send_email(EMAIL_CONFIG["to_email"], owner_subject, owner_body, is_html=True)
+            
+            # Send auto-reply to prospect if email provided
+            prospect_email_sent = False
+            if email:
+                prospect_email_sent = await send_email(email, prospect_subject, prospect_body, is_html=True)
+            
+            print(f"Email notifications - Owner: {'✅' if owner_email_sent else '❌'}, Prospect: {'✅' if prospect_email_sent else '❌'}")
+            
+        except Exception as email_error:
+            print(f"⚠️  Email sending failed (prospect still saved): {email_error}")
+
         return {
             "message": "Quote request submitted successfully",
             "id": prospect_id,
@@ -395,6 +569,7 @@ async def chat_with_ai(message: ChatMessage, request: Request):
     session_id = message.session_id or str(uuid.uuid4())
     user_ip = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent", "")
+    domain_brand = request.headers.get("x-domain-brand", "giorgiy")
 
     # Create or update session
     create_or_update_session(session_id, user_ip, user_agent)
@@ -438,10 +613,12 @@ async def chat_with_ai(message: ChatMessage, request: Request):
             }
             force_tier = tier_map.get(message.force_tier.upper())
 
-        # Generate response
+        # Generate response with domain-specific context
+        domain_context = get_domain_context(domain_brand)
         result = await llama_service.generate_response(
             message.message,
-            tier=force_tier
+            tier=force_tier,
+            domain_context=domain_context
         )
 
         # Add session_id to response

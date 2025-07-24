@@ -21,8 +21,8 @@ DOMAINS=(
     "www.giorgiy.org"
     "giorgiy-shepov.com"
     "www.giorgiy-shepov.com"
-    "bravoohiocci.org"
-    "www.bravoohiocci.org"
+    "bravoohio.org"
+    "www.bravoohio.org"
     "lodexinc.com"
     "www.lodexinc.com"
 )
@@ -132,14 +132,23 @@ main() {
     
     # Other domains
     obtain_ssl_cert "giorgiy-shepov.com" "www.giorgiy-shepov.com"
-    obtain_ssl_cert "bravoohiocci.org" "www.bravoohiocci.org"
+    obtain_ssl_cert "bravoohio.org" "www.bravoohio.org"
     obtain_ssl_cert "lodexinc.com" "www.lodexinc.com"
     
     # Install the production nginx config
     echo -e "${BLUE}[INFO] Installing production Nginx configuration...${NC}"
-    cp nginx-multi-domain.conf /etc/nginx/sites-available/multi-domain
-    ln -sf /etc/nginx/sites-available/multi-domain /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
+    
+    # For Docker deployment, copy to the container mount point
+    if [ -d "nginx/conf.d" ]; then
+        cp nginx/conf.d/multi-domain.conf /etc/nginx/conf.d/
+        echo -e "${GREEN}✅ Docker nginx config updated${NC}"
+    else
+        # For direct server deployment
+        cp nginx-multi-domain.conf /etc/nginx/sites-available/multi-domain 2>/dev/null || true
+        ln -sf /etc/nginx/sites-available/multi-domain /etc/nginx/sites-enabled/ 2>/dev/null || true
+        rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+        echo -e "${GREEN}✅ Server nginx config updated${NC}"
+    fi
     
     # Test and reload nginx
     if nginx -t; then
@@ -156,8 +165,9 @@ main() {
     
     echo -e "${GREEN}🎉 SSL setup completed!${NC}"
     echo -e "${BLUE}Your domains are now secured with HTTPS:${NC}"
-    for domain in giorgiy.org giorgiy-shepov.com bravoohiocci.org lodexinc.com; do
+    for domain in giorgiy.org giorgiy-shepov.com bravoohio.org lodexinc.com; do
         echo -e "  • https://$domain"
+        echo -e "  • https://www.$domain"
     done
 }
 

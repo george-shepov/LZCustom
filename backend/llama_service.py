@@ -51,18 +51,19 @@ class LLaMAService:
         self.session = None
         self.classifier = QuestionClassifier()
         
-        # Model configurations
+        # Model configurations with increased timeouts for model loading
         self.models = {
-            ModelTier.FAST: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 15, 200),
-            ModelTier.MEDIUM: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 25, 400),
-            ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 35, 600),
-            ModelTier.EXPERT: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 45, 800)
+            ModelTier.FAST: ModelConfig("llama3.2:3b", 30, 200),
+            ModelTier.MEDIUM: ModelConfig("gemma2:2b", 45, 400),
+            ModelTier.ADVANCED: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 60, 600),
+            ModelTier.EXPERT: ModelConfig("qwen2.5:7b-instruct-q4_k_m", 75, 800)
         }
 
     async def __aenter__(self):
         """Async context manager entry"""
         connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
-        timeout = aiohttp.ClientTimeout(total=60, connect=10)
+        # Increased timeouts for LLM model loading and processing
+        timeout = aiohttp.ClientTimeout(total=120, connect=30, sock_read=90)
         self.session = aiohttp.ClientSession(connector=connector, timeout=timeout)
         return self
 
@@ -75,7 +76,7 @@ class LLaMAService:
         """Main chat interface"""
         return await self.generate_response(question)
 
-    async def generate_response(self, question: str, tier: ModelTier = None) -> Dict:
+    async def generate_response(self, question: str, tier: ModelTier = None, domain_context: str = None) -> Dict:
         """Generate response using Ollama with intelligent model routing"""
         start_time = time.time()
         
@@ -87,7 +88,7 @@ class LLaMAService:
             config = self.models.get(tier, self.models[ModelTier.FAST])
             
             # Generate response
-            response = await self._call_ollama(question, config)
+            response = await self._call_ollama(question, config, domain_context)
             response_time = time.time() - start_time
             
             return {
@@ -103,22 +104,25 @@ class LLaMAService:
             print(f"❌ LLaMA Error: {e}")
             return self._error_response(str(e))
 
-    async def _call_ollama(self, question: str, config: ModelConfig) -> str:
+    async def _call_ollama(self, question: str, config: ModelConfig, domain_context: str = None) -> str:
         """Make API call to Ollama"""
         if not self.session:
             raise Exception("Session not initialized")
             
         try:
-            # Create LZ Custom context
-            lz_context = """You are a helpful customer service representative for LZ Custom Fabrication, 
-            a premier custom cabinet and stone fabrication company in Northeast Ohio with 30+ years of experience. 
-            We specialize in custom cabinets, countertops (granite, quartz, marble), tile installation, 
-            flooring, and commercial painting. We do in-house manufacturing and don't outsource. 
-            Our phone number is 216-268-2990. Always be helpful and encourage customers to call for quotes."""
+            # Use domain-specific context or fallback to default
+            if domain_context:
+                context = domain_context
+            else:
+                context = """You are a helpful customer service representative for LZ Custom Fabrication, 
+                a premier custom cabinet and stone fabrication company in Northeast Ohio with 30+ years of experience. 
+                We specialize in custom cabinets, countertops (granite, quartz, marble), tile installation, 
+                flooring, and commercial painting. We do in-house manufacturing and don't outsource. 
+                Our phone number is 216-268-2990. Always be helpful and encourage customers to call for quotes."""
             
             payload = {
                 "model": config.model_name,
-                "prompt": f"{lz_context}\n\nCustomer question: {question}\n\nResponse:",
+                "prompt": f"{context}\n\nCustomer question: {question}\n\nResponse:",
                 "stream": False,
                 "options": {
                     "temperature": 0.7,

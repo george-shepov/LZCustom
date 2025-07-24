@@ -6,11 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 LZ Custom Fabrication is a Vue.js 3 + FastAPI web application for a custom fabrication company. The application features:
 - Professional company website with services, gallery, and quote forms
-- AI-powered customer service chat using local LLaMA models
+- AI-powered customer service chat using local LLaMA models with intelligent model routing
 - Database logging for chat conversations and quote submissions
-- Production deployment with Docker and Ubuntu scripts
+- Multi-domain Nginx reverse proxy configuration supporting multiple websites
+- Production deployment with Docker Compose and automated Ubuntu provisioning scripts
 
 ## Development Commands
+
+### Quick Start
+```bash
+./scripts/dev-setup.sh    # Complete development environment setup
+./start-dev.sh           # Start both frontend and backend servers
+./test-system.sh         # Test all system components
+```
 
 ### Frontend (Vue.js 3 + Vite)
 ```bash
@@ -30,104 +38,169 @@ pip install -r requirements.txt    # Install dependencies
 python main.py                     # Start backend server (http://localhost:8000)
 ```
 
-### Development Setup Scripts
-```bash
-./scripts/dev-setup.sh       # Quick development environment setup
-./scripts/provision-ubuntu.sh   # Production Ubuntu deployment
-```
-
 ### AI Models (Ollama)
 ```bash
+ollama serve                             # Start Ollama server
 ollama pull qwen2.5:7b-instruct-q4_k_m  # Primary model for complex questions
 ollama pull gemma3:4b                    # Medium complexity questions
 ollama pull llama3.2:3b                  # Fast responses, simple questions
 ```
 
+### Production Deployment
+```bash
+./scripts/provision-ubuntu.sh   # Full production Ubuntu deployment
+docker-compose up --build       # Docker container deployment
+```
+
 ## Architecture
 
-### Frontend Structure
+### Frontend Architecture
 - **Vue.js 3** with Composition API and TypeScript support
-- **Vite** for fast development and building
-- **Component-based architecture**: Navigation, HeroSection, ServicesGrid, TrustBlock, GalleryPreview, QuoteForm, Footer, CustomerServiceChat
-- **Proxy configuration**: API calls to `/api/*` are proxied to `http://localhost:8000`
+- **Vite** build tool with HMR and proxy configuration
+- **Component hierarchy**: 
+  - `App.vue` - Main application shell
+  - `Navigation.vue` - Site navigation and branding
+  - `HeroSection.vue` - Dynamic hero with background images
+  - `ServicesGrid.vue` - Service offerings display
+  - `GalleryPreview.vue` - Project showcase
+  - `QuoteForm.vue` - Lead generation form
+  - `CustomerServiceChat.vue` - AI-powered chat interface
+  - `AdminDashboard.vue` - Analytics and management interface
+- **Routing**: Vue Router for SPA navigation
+- **API proxy**: Development server proxies `/api/*` to backend
 
-### Backend Structure
-- **FastAPI** application with CORS middleware for frontend communication
-- **SQLite database** (`lz_custom.db`) with tables for prospects, chat conversations, and sessions
-- **LLaMA service** (`llama_service.py`) with intelligent model routing based on question complexity
-- **Model tiers**: FAST (llama3.2:3b), MEDIUM (gemma3:4b), ADVANCED (qwen2.5:7b), EXPERT (llama4:16x17b)
+### Backend Architecture  
+- **FastAPI** application with automatic OpenAPI documentation
+- **SQLite database** with raw SQL for performance
+- **LLaMA service** (`llama_service.py`) with intelligent model routing:
+  - Question complexity analysis
+  - Automatic model tier selection (FAST/MEDIUM/ADVANCED/EXPERT)
+  - Async HTTP communication with Ollama
+- **CORS middleware** for frontend integration
+- **Database models**: Prospects, chat conversations, user sessions
 
-### Key Backend Files
-- `main.py`: FastAPI application with database models and API endpoints
-- `llama_service.py`: AI service with question classification and model routing
-- `lz_custom.db`: SQLite database for data persistence
+### Multi-Domain Nginx Configuration
+- **Reverse proxy** supporting multiple websites on single server
+- **SSL termination** with Let's Encrypt integration
+- **Load balancing** between frontend/backend containers
+- **Static asset serving** with caching headers
+- **Log aggregation** in `nginx/logs/`
 
 ### Database Schema
-- **prospects**: Quote submissions with contact info, project details, budget, timeline
-- **chat_conversations**: AI chat history with session tracking
-- **sessions**: User session management for conversation continuity
+```sql
+prospects: id, name, email, phone, project, message, budget, timeline, timestamp
+chat_conversations: id, session_id, message, response, model_used, timestamp
+sessions: id, session_id, user_ip, created_at, last_activity
+```
 
 ## API Endpoints
 
-### Core Endpoints
-- `POST /api/prospects`: Submit quote form data
-- `POST /api/chat`: Send message to AI chat service
-- `GET /api/analytics/dashboard`: View analytics and metrics
-- `GET /api/chat/conversations`: Retrieve chat history
-- `GET /api/chat/sessions`: View user sessions
+### Core Application APIs
+- `POST /api/prospects` - Quote form submissions
+- `POST /api/chat` - AI chat interactions with model routing
+- `GET /api/analytics/dashboard` - Business metrics and KPIs
+- `GET /api/chat/conversations` - Chat history with filtering
+- `GET /api/chat/sessions` - Active user sessions
 
 ### Development URLs
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
+- Backend API: http://localhost:8000  
 - API Documentation: http://localhost:8000/docs
+- Ollama API: http://localhost:11434
 
-## Testing
+### Production URLs (Docker)
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8001
+- Ollama: http://localhost:11435
+
+## Testing and Debugging
+
+### System Testing
+```bash
+./test-system.sh  # Automated system health checks
+```
 
 ### Manual API Testing
 ```bash
-# Test chat functionality
+# Test AI chat with complexity routing
 curl -X POST http://localhost:8000/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "What services do you offer?"}'
+  -d '{"message": "What stone materials do you work with for countertops?"}'
 
 # Test quote submission
 curl -X POST http://localhost:8000/api/prospects \
   -H "Content-Type: application/json" \
-  -d '{"name": "Test User", "email": "test@example.com", "phone": "216-555-0123", "project": "countertops", "message": "Test quote"}'
+  -d '{"name": "Test User", "email": "test@example.com", "phone": "216-555-0123", "project": "kitchen countertops", "message": "Looking for granite installation"}'
+
+# Test analytics dashboard
+curl http://localhost:8000/api/analytics/dashboard
 ```
+
+### Debugging Chat Issues
+- Check Ollama status: `ollama list` and `ollama ps`
+- Verify model downloads: Models are ~4-7GB each
+- Monitor backend logs for model routing decisions
+- Use `/docs` endpoint for interactive API testing
 
 ## Deployment
 
-### Docker Deployment
+### Docker Compose (Recommended)
 ```bash
-docker-compose up --build    # Build and run both frontend and backend
+docker-compose up --build    # Full stack with Ollama, Nginx
 ```
 
-### Production Ubuntu Setup
-The `scripts/provision-ubuntu.sh` script provides fully automated deployment including:
-- System dependencies (Node.js, Python, Ollama)
-- AI model downloads (10GB+ total)
-- Nginx reverse proxy configuration
-- Systemd services with auto-restart
+The Docker setup includes:
+- **Frontend container**: Vue.js app served by Vite
+- **Backend container**: FastAPI with Python dependencies
+- **Ollama container**: AI model serving
+- **Nginx container**: Reverse proxy and SSL termination
+- **Persistent volumes**: Database and model storage
+
+### Production Ubuntu Deployment
+The `scripts/provision-ubuntu.sh` provides complete automation:
+- System package installation (Node.js 20, Python 3.11, Docker)
+- Ollama installation and model downloads (~10GB)
+- Nginx configuration with SSL
+- Systemd service configuration
 - UFW firewall setup
+- Automatic service startup
 
 ## Key Dependencies
 
-### Frontend
-- Vue.js 3.4.15
-- Vite 5.2.10
-- TypeScript support via vue-tsc
+### Frontend Dependencies
+- **Vue.js 3.4.15** - Progressive framework
+- **Vite 5.2.10** - Build tool and dev server
+- **Vue Router 4.5.1** - Client-side routing
+- **TypeScript** support via vue-tsc
 
-### Backend
-- FastAPI for REST API
-- SQLite3 for database operations
-- aiohttp for async HTTP requests to Ollama
-- Pydantic for data validation
+### Backend Dependencies  
+- **FastAPI 0.104.1** - Modern Python web framework
+- **Uvicorn 0.24.0** - ASGI server
+- **Pydantic 2.5.0** - Data validation
+- **aiohttp 3.9.1** - Async HTTP client for Ollama
+- **SQLAlchemy 2.0.23** - Database toolkit
+- **python-multipart** - File upload support
 
-## Development Notes
+### AI/ML Dependencies
+- **Ollama 0.1.7** - Local LLaMA model serving
+- **Model files**: qwen2.5:7b, gemma3:4b, llama3.2:3b
 
-- The frontend uses TypeScript with Vue 3 Composition API
-- API calls are proxied through Vite dev server to avoid CORS issues
-- AI service intelligently routes questions to appropriate models based on complexity
-- Database operations use raw SQLite3 for simplicity and performance
-- All chat conversations and quote submissions are logged for analytics
+## Development Workflow
+
+### Making Changes
+1. **Frontend changes**: Hot reload at http://localhost:5173
+2. **Backend changes**: Restart `python main.py` to pick up changes
+3. **Database changes**: Modify schema in `main.py`, restart backend
+4. **AI model changes**: Update `llama_service.py` model routing logic
+
+### Adding New Features
+1. **UI components**: Add to `frontend/src/components/`
+2. **API endpoints**: Add to `backend/main.py` with proper Pydantic models
+3. **Database tables**: Define schema in `main.py` database initialization
+4. **Chat capabilities**: Extend `llama_service.py` model selection logic
+
+### Gallery Management
+- **Image location**: `frontend/public/assets/gallery/`
+- **Organization**: Categorized by service type (kitchens, bathrooms, commercial, etc.)
+- **Optimization**: Use `scripts/optimize-gallery-images.sh` for web optimization
+- **Format support**: JPG, PNG with automatic WebP conversion
